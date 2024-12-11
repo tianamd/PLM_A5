@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Product</title>
+</head>
+<body>
+    <h1>Add a New Product</h1>
+    <form method="POST">
+        <label>Name: <input type="text" name="name" required></label><br>
+        <label>Description: <textarea name="description"></textarea></label><br>
+        <label>Format: <input type="text" name="format" required></label><br>
+        <label>Quantity: <input type="number" name="quantity" required></label><br>
+        <label>Retail Price: <input type="number" step="0.01" name="retail_price" required></label><br>
+        <label>Cost: <input type="number" step="0.01" name="cost" required></label><br>
+
+        <h2>Range</h2>
+        <select name="range" required>
+            {% for range in ranges %}
+                <option value="{{ range.id }}">{{ range.name }}</option>
+            {% endfor %}
+            <option value="other_range">Other</option>
+        </select>
+        <input type="text" name="new_range" placeholder="New range"><br>
+
+        <h2>Notes</h2>
+        {% for note in notes %}
+            <label>
+                <input type="checkbox" name="notes" value="{{ note.id }}"> {{ note.name }}
+            </label><br>
+        {% endfor %}
+        <input type="text" name="new_notes" placeholder="New note"><br>
+
+        <h2>Compositions</h2>
+        {% for composition in compositions %}
+            <label>
+                <input type="checkbox" name="compositions" value="{{ composition.id }}"> {{ composition.name }}
+            </label><br>
+        {% endfor %}
+        <input type="text" name="new_compositions" placeholder="New composition"><br>
+
+        <button type="submit">Add Product</button>
+    </form>
+</body>
+</html>

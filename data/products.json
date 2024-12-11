@@ -1,0 +1,112 @@
+[
+    {
+        "id": 1,
+        "name": "Mystic Oud",
+        "description": "A deep and mysterious scent with warm notes of oud and cedarwood, balanced by the richness of amber.",
+        "format": "100ml",
+        "quantity": 50,
+        "retail_price": 85.0,
+        "cost": 40.0,
+        "id_range": 1,
+        "range_name": "Men"
+    },
+    {
+        "id": 2,
+        "name": "Citrus Storm",
+        "description": "A fresh and energizing blend of lemon and bergamot, with a smooth musk undertone.",
+        "format": "100ml",
+        "quantity": 60,
+        "retail_price": 75.0,
+        "cost": 35.0,
+        "id_range": 1,
+        "range_name": "Men"
+    },
+    {
+        "id": 3,
+        "name": "Spicy Leather",
+        "description": "An intense and captivating scent combining black pepper, leather, and earthy vetiver.",
+        "format": "100ml",
+        "quantity": 40,
+        "retail_price": 90.0,
+        "cost": 45.0,
+        "id_range": 1,
+        "range_name": "Men"
+    },
+    {
+        "id": 4,
+        "name": "Midnight Woods",
+        "description": "A tranquil and rich aroma with sandalwood, relaxing lavender, and a touch of ambergris.",
+        "format": "100ml",
+        "quantity": 55,
+        "retail_price": 80.0,
+        "cost": 40.0,
+        "id_range": 1,
+        "range_name": "Men"
+    },
+    {
+        "id": 5,
+        "name": "Frosted Horizon",
+        "description": "A crisp and invigorating scent with mint and eucalyptus, softened by a musky base.",
+        "format": "100ml",
+        "quantity": 45,
+        "retail_price": 70.0,
+        "cost": 30.0,
+        "id_range": 1,
+        "range_name": "Men"
+    },
+    {
+        "id": 6,
+        "name": "Velvet Rose",
+        "description": "A luxurious and elegant blend of rose and jasmine, enhanced by a touch of white musk.",
+        "format": "100ml",
+        "quantity": 50,
+        "retail_price": 85.0,
+        "cost": 42.0,
+        "id_range": 2,
+        "range_name": "Women"
+    },
+    {
+        "id": 7,
+        "name": "Golden Amber",
+        "description": "A warm and rich fragrance with sweet amber, vanilla, and earthy patchouli.",
+        "format": "100ml",
+        "quantity": 40,
+        "retail_price": 95.0,
+        "cost": 48.0,
+        "id_range": 2,
+        "range_name": "Women"
+    },
+    {
+        "id": 8,
+        "name": "Iris Bloom",
+        "description": "A delicate floral scent with notes of iris, fresh bergamot, and warm tonka bean.",
+        "format": "100ml",
+        "quantity": 60,
+        "retail_price": 75.0,
+        "cost": 36.0,
+        "id_range": 2,
+        "range_name": "Women"
+    },
+    {
+        "id": 9,
+        "name": "Citrus Charm",
+        "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
+        "format": "100ml",
+        "quantity": 65,
+        "retail_price": 70.0,
+        "cost": 33.0,
+        "id_range": 2,
+        "range_name": "Women"
+    },
+    {
+        "id": 10,
+        "name": "Sweet Peony",
+        "description": "A soft and romantic scent with sweet peony, juicy raspberry, and gentle woody undertones.",
+        "format": "100ml",
+        "quantity": 55,
+        "retail_price": 80.0,
+        "cost": 38.0,
+        "id_range": 2,
+        "range_name": "Women"
+    }
+]

@@ -1,0 +1,106 @@
+[
+    {
+        "id": 1,
+        "name": "Alcohol"
+    },
+    {
+        "id": 2,
+        "name": "Water"
+    },
+    {
+        "id": 3,
+        "name": "Essential Oils"
+    },
+    {
+        "id": 4,
+        "name": "Oud Extract"
+    },
+    {
+        "id": 5,
+        "name": "Aqua"
+    },
+    {
+        "id": 6,
+        "name": "Citrus Oil"
+    },
+    {
+        "id": 7,
+        "name": "Musk Essence"
+    },
+    {
+        "id": 8,
+        "name": "Leather Accord"
+    },
+    {
+        "id": 9,
+        "name": "Vetiver Oil"
+    },
+    {
+        "id": 10,
+        "name": "Fragrance"
+    },
+    {
+        "id": 11,
+        "name": "Sandalwood Oil"
+    },
+    {
+        "id": 12,
+        "name": "Lavender Extract"
+    },
+    {
+        "id": 13,
+        "name": "Mint Oil"
+    },
+    {
+        "id": 14,
+        "name": "Eucalyptus Essence"
+    },
+    {
+        "id": 15,
+        "name": "Rose Absolute"
+    },
+    {
+        "id": 16,
+        "name": "Jasmine Extract"
+    },
+    {
+        "id": 17,
+        "name": "Amber Resin"
+    },
+    {
+        "id": 18,
+        "name": "Vanilla Bean"
+    },
+    {
+        "id": 19,
+        "name": "Patchouli Oil"
+    },
+    {
+        "id": 20,
+        "name": "Bergamot Oil"
+    },
+    {
+        "id": 21,
+        "name": "Iris Extract"
+    },
+    {
+        "id": 22,
+        "name": "Tonka Bean Oil"
+    },
+    {
+        "id": 23,
+        "name": "Mandarin Essence"
+    },
+    {
+        "id": 24,
+        "name": "Orange Flower Absolute"
+    },
+    {
+        "id": 25,
+        "name": "Peony Extract"
+    },
+    {
+        "id": 26,
+        "name": "Raspberry Accord"
+    }
+]
