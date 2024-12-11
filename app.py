@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Dec 11 14:53:09 2024
-
-@author: tiana
-"""
-
 import json
 import csv
 from flask import Flask, Response, stream_with_context, render_template, request, redirect, url_for, session, flash
@@ -68,42 +61,36 @@ def load_data():
     try:
         with open(PRODUCTS_FILE, 'r') as f:
             products = json.load(f)
-        print("Products loaded:", products)
     except FileNotFoundError:
         products = []
 
     try:
         with open(NOTES_FILE, 'r') as f:
             notes = json.load(f)
-        print("Notes loaded:", notes)
     except FileNotFoundError:
         notes = []
 
     try:
         with open(COMPOSITIONS_FILE, 'r') as f:
             compositions = json.load(f)
-        print("Compositions loaded:", compositions)
     except FileNotFoundError:
         compositions = []
 
     try:
         with open(PRODUCT_NOTES_FILE, 'r') as f:
             product_notes = json.load(f)
-        print("Product Notes loaded:", product_notes)
     except FileNotFoundError:
         product_notes = []
 
     try:
         with open(PRODUCT_COMPOSITIONS_FILE, 'r') as f:
             product_compositions = json.load(f)
-        print("Product Compositions loaded:", product_compositions)
     except FileNotFoundError:
         product_compositions = []
 
     try:
         with open(RANGES_FILE, 'r') as f:
             ranges = json.load(f)
-        print("Ranges loaded:", ranges)
     except FileNotFoundError:
         ranges = []
 
@@ -126,7 +113,7 @@ def login_register():
             if user:
                 session['username'] = user['username']
                 session['type'] = user['type']
-                return redirect(url_for('item_table'))
+                return redirect(url_for('index'))
             else:
                 flash("Invalid credentials. Please try again.")
         elif 'register' in request.form:
@@ -150,31 +137,26 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for('login_register'))
 
-@app.route('/ItemTable')
-def item_table():
+def checkAuth():
+    """Check if the user is authenticated or redirect to login."""
     if not users:
         # Redirect to login/register if no users are registered
         flash("No users registered. Please create an account first.")
         return redirect(url_for('login_register'))
     
-    """Item table displaying products."""
     if 'username' not in session:
+        # Redirect to login/register if the user is not logged in
         flash("Please log in to access this page.")
         return redirect(url_for('login_register'))
-
-    # Logic for displaying the products remains the same...
-    return render_template('index.html', products=products)
-
-
+    
+    # Return None if authentication is valid
+    return None
+    
 @app.route('/')
 def index():
-    if not users:
-        # Redirect to login/register if no users are registered
-        flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
-    
-    print("Notes passed to template:", notes)
-    print("Compositions passed to template:", compositions)
+    auth_redirect = checkAuth()
+    if auth_redirect :
+        return auth_redirect
     
     """Display all products in a table with sorting and filtering."""
     # Get sorting parameters from query string
@@ -251,15 +233,11 @@ def index():
     )
 
 @app.route('/export_csv')
-def export_csv():
-    if not users:
-        # Redirect to login/register if no users are registered
-        flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
-    
+def export_csv():    
     """Export selected product details as a CSV with multi-relational Notes and Composition."""
-    # Debugging
-    print("Received export request")
+    auth_redirect = checkAuth()
+    if auth_redirect :
+        return auth_redirects
 
     # Get filter parameters
     price_type = request.args.get('price_type', 'retail_price')
@@ -357,15 +335,11 @@ def export_csv():
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
-    if not users:
-        # Redirect to login/register if no users are registered
-        flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
-    
-    print("Notes in product_detail route:", notes)
-    print("Compositions in product_detail route:", compositions)
-    
     """Display details of a product with its notes and compositions."""
+    auth_redirect = checkAuth()
+    if auth_redirect :
+        return auth_redirect
+    
     # Find the product
     product = next((p for p in products if p['id'] == product_id), None)
     if not product:
@@ -382,11 +356,11 @@ def product_detail(product_id):
 
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
-    if not users:
-        # Redirect to login/register if no users are registered
-        flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
     """Add a new product with notes, compositions, and range."""
+    auth_redirect = checkAuth()
+    if auth_redirect :
+        return auth_redirect
+    
     if request.method == 'POST':
         # Collect product data
         product_id = len(products) + 1
@@ -451,12 +425,11 @@ def add_product():
 
 @app.route('/product/delete/<int:product_id>', methods=['POST'])
 def delete_product(product_id):
-    if not users:
-        # Redirect to login/register if no users are registered
-        flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
-    
     """Delete a product and its related entries in product_notes and product_compositions."""
+    auth_redirect = checkAuth()
+    if auth_redirect :
+        return auth_redirect
+    
     global products, product_notes, product_compositions
 
     # Remove the product from products

@@ -203,12 +203,12 @@
     <table>
         <thead>
             <tr>
-                <th>Range</th>
-                <th>Product Name</th>
-                <th>Format</th>
-                <th>Retail Price</th>
-                <th>Cost</th>
-                <th>Quantity</th>
+                <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
+                <th><a href="{{ url_for('index', sort='name', order='asc' if sort_column != 'name' or sort_order == 'desc' else 'desc') }}">Product Name</a></th>
+                <th><a href="{{ url_for('index', sort='format', order='asc' if sort_column != 'format' or sort_order == 'desc' else 'desc') }}">Format</a></th>
+                <th><a href="{{ url_for('index', sort='retail_price', order='asc' if sort_column != 'retail_price' or sort_order == 'desc' else 'desc') }}">Retail Price</a></th>
+                <th><a href="{{ url_for('index', sort='cost', order='asc' if sort_column != 'cost' or sort_order == 'desc' else 'desc') }}">Cost</a></th>
+                <th><a href="{{ url_for('index', sort='quantity', order='asc' if sort_column != 'quantity' or sort_order == 'desc' else 'desc') }}">Quantity</a></th>
                 <th>Notes</th>
                 <th>Composition</th>
                 <th>Description</th>
@@ -225,7 +225,7 @@
                     <td>{{ product.format }}</td>
                     <td>${{ product.retail_price }}</td>
                     <td>${{ product.cost }}</td>
-                    <td>{{ product.quantity }}</td> <!-- Quantity Data -->
+                    <td>{{ product.quantity }}</td>
                     <td>{{ ", ".join(product.notes) }}</td>
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>
