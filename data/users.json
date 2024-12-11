@@ -1,12 +1,12 @@
 [
     {
         "username": "admin",
-        "password": "$pbkdf2-sha256$29000$KqrzN8IerFhLuzQ$uNQ2/CvVr8ULfiEtGnVmL93N44EMB/BGjrz5QHrsP3E",
+        "password": "$pbkdf2-sha256$29000$g9D6P2dsbS0FwDiH8F5rrQ$LBPyyLlcSmc4qSRV2IPrJqn6cdP8Rr0oqwVKwZtmWrk",
         "type": "admin"
     },
     {
-        "username": "Tiana",
-        "password": "admin",
+        "username": "tiana",
+        "password": "$pbkdf2-sha256$29000$5XxvTen9P8f4/19LaW0NIQ$ucgaqyDyTNAUkTVlIttEtR885rw.4NnpCkQJSJ6iiKk",
         "type": "user"
     }
 ]

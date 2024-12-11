@@ -1,6 +1,7 @@
 import json
 import csv
 from flask import Flask, Response, stream_with_context, render_template, request, redirect, url_for, session, flash
+from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Secret key for session management
@@ -109,8 +110,8 @@ def login_register():
             # Handle login
             username = request.form['username']
             password = request.form['password']
-            user = next((u for u in users if u['username'] == username and u['password'] == password), None)
-            if user:
+            user = next((u for u in users if u['username'] == username), None)
+            if user and pbkdf2_sha256.verify(password, user['password']):  # Verify the hashed password
                 session['username'] = user['username']
                 session['type'] = user['type']
                 return redirect(url_for('index'))
@@ -123,7 +124,8 @@ def login_register():
             if any(u['username'] == username for u in users):
                 flash("Username already exists. Please choose a different one.")
             else:
-                users.append({'username': username, 'password': password, 'type': 'user'})
+                hashed_password = pbkdf2_sha256.hash(password)  # Hash the password
+                users.append({'username': username, 'password': hashed_password, 'type': 'user'})
                 save_users()
                 flash("Registration successful! You can now log in.")
                 return redirect(url_for('login_register'))
