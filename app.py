@@ -363,6 +363,11 @@ def add_product():
     if auth_redirect :
         return auth_redirect
     
+    # Check user type
+    if session.get('type') not in ['admin', 'manager']:
+        flash("You do not have permission to add products.")
+        return redirect(url_for('index'))
+    
     if request.method == 'POST':
         # Collect product data
         product_id = len(products) + 1
@@ -470,6 +475,107 @@ def update_quantity(product_id):
 
     # Redirect back to the referring page
     return redirect(request.referrer)
+
+@app.route('/product/<int:product_id>/update_price', methods=['POST'])
+def update_price(product_id):
+    """Update the retail price or cost of a product."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    # Determine the field to update
+    field = request.args.get('field')
+    if field not in ['retail_price', 'cost']:
+        flash("Invalid field.")
+        return redirect(request.referrer)
+
+    # Update the field
+    try:
+        new_value = float(request.form['value'])
+        product[field] = new_value
+        save_data()  # Save the updated data to JSON
+        flash(f"{field.replace('_', ' ').capitalize()} for {product['name']} updated successfully.")
+    except ValueError:
+        flash("Invalid value entered.")
+
+    # Redirect back to the referring page
+    return redirect(request.referrer)
+
+@app.route('/manage_users')
+def manage_users():
+    """Admin-only page to manage users."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Ensure only admin can access this page
+    if session.get('type') != 'admin':
+        flash("You do not have permission to access this page.")
+        return redirect(url_for('index'))
+
+    # Pass users to the template
+    return render_template('manage_users.html', users=users)
+
+@app.route('/update_user_role/<username>', methods=['POST'])
+def update_user_role(username):
+    """Update the role of a user."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Ensure only admin can perform this action
+    if session.get('type') != 'admin':
+        flash("You do not have permission to update user roles.")
+        return redirect(url_for('manage_users'))
+
+    # Find the user
+    user = next((u for u in users if u['username'] == username), None)
+    if not user:
+        flash("User not found.")
+        return redirect(url_for('manage_users'))
+
+    # Update the user's role
+    new_role = request.form.get('role')
+    if new_role in ['user', 'manager', 'admin']:
+        user['type'] = new_role
+        save_users()  # Save updated users to the JSON file
+        flash(f"Role for {username} updated to {new_role}.")
+    else:
+        flash("Invalid role selected.")
+
+    return redirect(url_for('manage_users'))
+
+@app.route('/delete_user/<username>', methods=['POST'])
+def delete_user(username):
+    """Delete a user."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Ensure only admin can perform this action
+    if session.get('type') != 'admin':
+        flash("You do not have permission to delete users.")
+        return redirect(url_for('manage_users'))
+
+    # Ensure the admin cannot delete themselves
+    if username == session.get('username'):
+        flash("You cannot delete yourself.")
+        return redirect(url_for('manage_users'))
+
+    # Remove the user from the list
+    global users
+    users = [u for u in users if u['username'] != username]
+    save_users()  # Save updated users to the JSON file
+    flash(f"User {username} deleted successfully.")
+
+    return redirect(url_for('manage_users'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

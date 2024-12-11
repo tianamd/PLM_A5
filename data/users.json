@@ -5,8 +5,13 @@
         "type": "admin"
     },
     {
-        "username": "tiana",
-        "password": "$pbkdf2-sha256$29000$5XxvTen9P8f4/19LaW0NIQ$ucgaqyDyTNAUkTVlIttEtR885rw.4NnpCkQJSJ6iiKk",
+        "username": "user",
+        "password": "$pbkdf2-sha256$29000$3htjDOGcs1bqXSvFOOccIw$/PM1Zl0dUgmB0A32qyLi0gFzfYW3awBFGX5IQA7Qk8k",
         "type": "user"
+    },
+    {
+        "username": "manager",
+        "password": "$pbkdf2-sha256$29000$bi3lfK81JsR4j/HeuzcGQA$smj.5PUqHd2TeoxHZVJxtaai/MLyrKPjXnjnv/QQBG8",
+        "type": "manager"
     }
 ]

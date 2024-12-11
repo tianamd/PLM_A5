@@ -102,7 +102,14 @@
         </div>
     {% endif %}
     
-    <a href="{{ url_for('add_product') }}">Add Product</a>
+    {% if session.get('type') in ['admin', 'manager'] %}
+        <a href="{{ url_for('add_product') }}">Add Product</a>
+    {% endif %}
+    
+    {% if session.get('type') == 'admin' %}
+        <a href="{{ url_for('manage_users') }}" class="btn btn-primary">Manage Users</a>
+    {% endif %}
+
 
 
     <!-- Filter Form -->
@@ -212,7 +219,9 @@
                 <th>Notes</th>
                 <th>Composition</th>
                 <th>Description</th>
-                <th>Action</th>
+                {% if session.get('type') == 'admin' %}
+                    <th>Action</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -223,8 +232,25 @@
                         <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
                     </td>
                     <td>{{ product.format }}</td>
-                    <td>${{ product.retail_price }}</td>
-                    <td>${{ product.cost }}</td>
+                    <td>
+                        {% if session.get('type') in ['admin', 'manager'] %}
+                            <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='retail_price') }}">
+                                <input type="number" name="value" value="{{ product.retail_price }}" step="0.01" min="0" style="width: 80px;">
+                            </form>
+                        {% else %}
+                        ${{ product.retail_price }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if session.get('type') in ['admin', 'manager'] %}
+                            <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='cost') }}">
+                                <input type="number" name="value" value="{{ product.cost }}" step="0.01" min="0" style="width: 80px;">
+                            </form>
+                        {% else %}
+                        ${{ product.cost }}
+                        {% endif %}
+                    </td>
+
                     <td>
                         <form method="POST" action="{{ url_for('update_quantity', product_id=product.id) }}">
                             <input type="number" name="quantity" value="{{ product.quantity }}" min="0" style="width: 80px;">
@@ -235,11 +261,13 @@
                     <td>{{ ", ".join(product.notes) }}</td>
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>
-                    <td>
-                        <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
-                            <button type="submit" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
-                        </form>
-                    </td>
+                    {% if session.get('type') == 'admin' %}
+                        <td>
+                            <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
