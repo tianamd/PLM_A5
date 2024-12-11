@@ -5,6 +5,13 @@
 </head>
 <body>
     <h1>Add a New Product</h1>
+    {% if session.get('username') %}
+        <div style="text-align: right;">
+            Logged in as: {{ session['username'] }} | 
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    
     <form method="POST">
         <label>Name: <input type="text" name="name" required></label><br>
         <label>Description: <textarea name="description"></textarea></label><br>

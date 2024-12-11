@@ -1,12 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Dec 11 14:53:09 2024
+
+@author: tiana
+"""
+
 import json
 import csv
-from flask import Flask, render_template, request, redirect, url_for, Response, stream_with_context
+from flask import Flask, Response, stream_with_context, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"  # Secret key for session management
 
 # Paths to JSON files
 PRODUCTS_FILE = "data/products.json"
 NOTES_FILE = "data/notes.json"
+USERS_FILE = "data/users.json"
 COMPOSITIONS_FILE = "data/compositions.json"
 PRODUCT_NOTES_FILE = "data/product_notes.json"
 PRODUCT_COMPOSITIONS_FILE = "data/product_compositions.json"
@@ -19,6 +28,24 @@ compositions = []
 product_notes = []
 product_compositions = []
 ranges = []
+users = []
+
+def save_users():
+    """Save users to JSON file."""
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=4)
+
+def load_users():
+    """Load users from JSON file."""
+    global users
+    try:
+        with open(USERS_FILE, 'r') as f:
+            users = json.load(f)
+    except FileNotFoundError:
+        users = []
+
+# Load user data at startup
+load_users()
 
 def save_data():
     """Save data to JSON files."""
@@ -41,44 +68,114 @@ def load_data():
     try:
         with open(PRODUCTS_FILE, 'r') as f:
             products = json.load(f)
+        print("Products loaded:", products)
     except FileNotFoundError:
         products = []
 
     try:
         with open(NOTES_FILE, 'r') as f:
             notes = json.load(f)
+        print("Notes loaded:", notes)
     except FileNotFoundError:
         notes = []
 
     try:
         with open(COMPOSITIONS_FILE, 'r') as f:
             compositions = json.load(f)
+        print("Compositions loaded:", compositions)
     except FileNotFoundError:
         compositions = []
 
     try:
         with open(PRODUCT_NOTES_FILE, 'r') as f:
             product_notes = json.load(f)
+        print("Product Notes loaded:", product_notes)
     except FileNotFoundError:
         product_notes = []
 
     try:
         with open(PRODUCT_COMPOSITIONS_FILE, 'r') as f:
             product_compositions = json.load(f)
+        print("Product Compositions loaded:", product_compositions)
     except FileNotFoundError:
         product_compositions = []
 
     try:
         with open(RANGES_FILE, 'r') as f:
             ranges = json.load(f)
+        print("Ranges loaded:", ranges)
     except FileNotFoundError:
         ranges = []
 
 # Load data when the app starts
 load_data()
 
+@app.route('/login_register', methods=['GET', 'POST'])
+def login_register():
+    if 'username' in session:
+        # If user is already logged in, redirect to /ItemTable
+        return redirect(url_for('item_table'))
+    
+    """Login and Registration page."""
+    if request.method == 'POST':
+        if 'login' in request.form:
+            # Handle login
+            username = request.form['username']
+            password = request.form['password']
+            user = next((u for u in users if u['username'] == username and u['password'] == password), None)
+            if user:
+                session['username'] = user['username']
+                session['type'] = user['type']
+                return redirect(url_for('item_table'))
+            else:
+                flash("Invalid credentials. Please try again.")
+        elif 'register' in request.form:
+            # Handle registration
+            username = request.form['username']
+            password = request.form['password']
+            if any(u['username'] == username for u in users):
+                flash("Username already exists. Please choose a different one.")
+            else:
+                users.append({'username': username, 'password': password, 'type': 'user'})
+                save_users()
+                flash("Registration successful! You can now log in.")
+                return redirect(url_for('login_register'))
+
+    return render_template('login_register.html')
+
+@app.route('/logout')
+def logout():
+    """Logout the user."""
+    session.clear()
+    flash("You have been logged out.")
+    return redirect(url_for('login_register'))
+
+@app.route('/ItemTable')
+def item_table():
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
+    
+    """Item table displaying products."""
+    if 'username' not in session:
+        flash("Please log in to access this page.")
+        return redirect(url_for('login_register'))
+
+    # Logic for displaying the products remains the same...
+    return render_template('index.html', products=products)
+
+
 @app.route('/')
 def index():
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
+    
+    print("Notes passed to template:", notes)
+    print("Compositions passed to template:", compositions)
+    
     """Display all products in a table with sorting and filtering."""
     # Get sorting parameters from query string
     sort_column = request.args.get('sort', 'name')  # Default to sorting by Product Name
@@ -155,6 +252,11 @@ def index():
 
 @app.route('/export_csv')
 def export_csv():
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
+    
     """Export selected product details as a CSV with multi-relational Notes and Composition."""
     # Debugging
     print("Received export request")
@@ -255,6 +357,14 @@ def export_csv():
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
+    
+    print("Notes in product_detail route:", notes)
+    print("Compositions in product_detail route:", compositions)
+    
     """Display details of a product with its notes and compositions."""
     # Find the product
     product = next((p for p in products if p['id'] == product_id), None)
@@ -272,6 +382,10 @@ def product_detail(product_id):
 
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
     """Add a new product with notes, compositions, and range."""
     if request.method == 'POST':
         # Collect product data
@@ -337,6 +451,11 @@ def add_product():
 
 @app.route('/product/delete/<int:product_id>', methods=['POST'])
 def delete_product(product_id):
+    if not users:
+        # Redirect to login/register if no users are registered
+        flash("No users registered. Please create an account first.")
+        return redirect(url_for('login_register'))
+    
     """Delete a product and its related entries in product_notes and product_compositions."""
     global products, product_notes, product_compositions
 

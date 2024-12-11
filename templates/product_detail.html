@@ -5,6 +5,13 @@
 </head>
 <body>
     <h1>{{ product.name }}</h1>
+    {% if session.get('username') %}
+        <div style="text-align: right;">
+            Logged in as: {{ session['username'] }} | 
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    
     <p><strong>Description:</strong> {{ product.description }}</p>
     <p><strong>Format:</strong> {{ product.format }}</p>
     <p><strong>Quantity:</strong> {{ product.quantity }}</p>

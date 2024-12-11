@@ -95,7 +95,13 @@
 </head>
 <body>
     <h1>Product Lifecycle Management</h1>
-
+    {% if session.get('username') %}
+        <div style="text-align: right;">
+            Logged in as: {{ session['username'] }} | 
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    {% endif %}
+    
     <a href="{{ url_for('add_product') }}">Add Product</a>
 
 
