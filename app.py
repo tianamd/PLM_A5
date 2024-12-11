@@ -446,6 +446,30 @@ def delete_product(product_id):
 
     return redirect(url_for('index'))
 
+@app.route('/product/<int:product_id>/update_quantity', methods=['POST'])
+def update_quantity(product_id):
+    """Update the quantity of a product."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    # Update the quantity
+    try:
+        new_quantity = int(request.form['quantity'])
+        product['quantity'] = new_quantity
+        save_data()  # Save the updated data to JSON
+        flash(f"Quantity for {product['name']} updated successfully.")
+    except ValueError:
+        flash("Invalid quantity value.")
+
+    # Redirect back to the referring page
+    return redirect(request.referrer)
 
 if __name__ == '__main__':
     app.run(debug=True)

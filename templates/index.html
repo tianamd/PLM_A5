@@ -225,7 +225,13 @@
                     <td>{{ product.format }}</td>
                     <td>${{ product.retail_price }}</td>
                     <td>${{ product.cost }}</td>
-                    <td>{{ product.quantity }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('update_quantity', product_id=product.id) }}">
+                            <input type="number" name="quantity" value="{{ product.quantity }}" min="0" style="width: 80px;">
+                            
+                        </form>
+                    </td>
+
                     <td>{{ ", ".join(product.notes) }}</td>
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>
