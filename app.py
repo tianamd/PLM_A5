@@ -348,36 +348,47 @@ def product_detail(product_id):
 
     return render_template('product_detail.html', product=product, notes=related_notes, compositions=related_compositions)
 
-
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
     """Add a new product with notes, compositions, and range."""
     auth_redirect = checkAuth()
-    if auth_redirect :
+    if auth_redirect:
         return auth_redirect
-    
-    # Check user type
-    if session.get('type') not in ['admin', 'manager']:
-        flash("You do not have permission to add products.")
-        return redirect(url_for('index'))
-    
+
     if request.method == 'POST':
         # Collect product data
         product_id = len(products) + 1
         name = request.form['name']
         description = request.form['description']
         format_ = request.form['format']
-        cost = float(request.form['cost'])
+        range_id = int(request.form['range'])
+        
+        # Handle notes
+        selected_notes = request.form.getlist('notes')
+        new_notes = request.form.getlist('new_notes')
+        for note_name in new_notes:
+            if note_name.strip():
+                new_note_id = len(notes) + 1
+                notes.append({'id': new_note_id, 'name': note_name})
+                product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': new_note_id})
+        for note in selected_notes:
+            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note)})
 
-        # Handle range
-        selected_range = request.form['range']
-        if selected_range == 'other_range':
-            new_range_name = request.form['new_range']
-            new_range_id = len(ranges) + 1
-            ranges.append({'id': new_range_id, 'name': new_range_name})
-            range_id = new_range_id
-        else:
-            range_id = int(selected_range)
+        # Handle compositions
+        selected_compositions = request.form.getlist('compositions')
+        new_compositions = request.form.getlist('new_compositions')
+        product_compositions_list = []
+        for composition_name in new_compositions:
+            if composition_name.strip():
+                new_composition_id = len(compositions) + 1
+                compositions.append({'id': new_composition_id, 'name': composition_name, 'price': 0.0})  # Default price
+                product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': new_composition_id})
+        for composition in selected_compositions:
+            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(composition)})
+            product_compositions_list.append(int(composition))
+
+        # Calculate cost based on selected compositions
+        cost = sum(comp['price'] for comp in compositions if comp['id'] in product_compositions_list)
 
         # Add product to the database
         products.append({
@@ -389,32 +400,8 @@ def add_product():
             'id_range': range_id
         })
 
-        # Handle notes
-        new_notes = request.form.getlist('new_notes')
-        selected_notes = request.form.getlist('notes')
-        for note_name in new_notes:
-            if note_name.strip():
-                new_note_id = len(notes) + 1
-                notes.append({'id': new_note_id, 'name': note_name})
-                product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': new_note_id})
-
-        for note in selected_notes:
-            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note)})
-
-        # Handle compositions
-        new_compositions = request.form.getlist('new_compositions')
-        selected_compositions = request.form.getlist('compositions')
-        for composition_name in new_compositions:
-            if composition_name.strip():
-                new_composition_id = len(compositions) + 1
-                compositions.append({'id': new_composition_id, 'name': composition_name})
-                product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': new_composition_id})
-
-        for composition in selected_compositions:
-            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(composition)})
-
-        # Save data to JSON files
-        save_data()
+        save_data()  # Save the updated data
+        flash(f"Product {name} added successfully!")
         return redirect(url_for('index'))
 
     return render_template('add_product.html', notes=notes, compositions=compositions, ranges=ranges)
@@ -440,36 +427,15 @@ def delete_product(product_id):
 
     return redirect(url_for('index'))
 
-@app.route('/product/<int:product_id>/update_price', methods=['POST'])
-def update_price(product_id):
-    """Update the cost of a product."""
-    auth_redirect = checkAuth()
-    if auth_redirect:
-        return auth_redirect
-
-    # Find the product
+def recalculate_product_cost(product_id):
+    """Recalculate the cost of a product based on its components."""
+    product_comps = [pc for pc in product_compositions if pc['id_product'] == product_id]
+    component_ids = [pc['id_composition'] for pc in product_comps]
+    cost = sum(comp['price'] for comp in compositions if comp['id'] in component_ids)
     product = next((p for p in products if p['id'] == product_id), None)
-    if not product:
-        flash("Product not found.")
-        return redirect(url_for('index'))
-
-    # Determine the field to update
-    field = request.args.get('field')
-    if field not in ['cost']:
-        flash("Invalid field.")
-        return redirect(request.referrer)
-
-    # Update the field
-    try:
-        new_value = float(request.form['value'])
-        product[field] = new_value
-        save_data()  # Save the updated data to JSON
-        flash(f"{field.replace('_', ' ').capitalize()} for {product['name']} updated successfully.")
-    except ValueError:
-        flash("Invalid value entered.")
-
-    # Redirect back to the referring page
-    return redirect(request.referrer)
+    if product:
+        product['cost'] = cost
+        save_data()
 
 @app.route('/manage_users', methods=['GET', 'POST'])
 def manage_users():

@@ -230,16 +230,7 @@
                         <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
                     </td>
                     <td>{{ product.format }}</td>
-                    <td>
-                        {% if session.get('type') in ['admin', 'manager'] %}
-                            <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='cost') }}">
-                                <input type="number" name="value" value="{{ product.cost }}" step="0.01" min="0" style="width: 80px;">
-                            </form>
-                        {% else %}
-                        ${{ product.cost }}
-                        {% endif %}
-                    </td>
-
+                    <td>{{ product.cost }}</td>
                     <td>{{ ", ".join(product.notes) }}</td>
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>

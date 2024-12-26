@@ -1,106 +1,132 @@
 [
     {
         "id": 1,
-        "name": "Alcohol"
+        "name": "Alcohol",
+        "price": 10.0
     },
     {
         "id": 2,
-        "name": "Water"
+        "name": "Water",
+        "price": 5.0
     },
     {
         "id": 3,
-        "name": "Essential Oils"
+        "name": "Essential Oils",
+        "price": 20.0
     },
     {
         "id": 4,
-        "name": "Oud Extract"
+        "name": "Oud Extract",
+        "price": 50.0
     },
     {
         "id": 5,
-        "name": "Aqua"
+        "name": "Aqua",
+        "price": 8.0
     },
     {
         "id": 6,
-        "name": "Citrus Oil"
+        "name": "Citrus Oil",
+        "price": 15.0
     },
     {
         "id": 7,
-        "name": "Musk Essence"
+        "name": "Musk Essence",
+        "price": 25.0
     },
     {
         "id": 8,
-        "name": "Leather Accord"
+        "name": "Leather Accord",
+        "price": 30.0
     },
     {
         "id": 9,
-        "name": "Vetiver Oil"
+        "name": "Vetiver Oil",
+        "price": 40.0
     },
     {
         "id": 10,
-        "name": "Fragrance"
+        "name": "Fragrance",
+        "price": 18.0
     },
     {
         "id": 11,
-        "name": "Sandalwood Oil"
+        "name": "Sandalwood Oil",
+        "price": 35.0
     },
     {
         "id": 12,
-        "name": "Lavender Extract"
+        "name": "Lavender Extract",
+        "price": 22.0
     },
     {
         "id": 13,
-        "name": "Mint Oil"
+        "name": "Mint Oil",
+        "price": 12.0
     },
     {
         "id": 14,
-        "name": "Eucalyptus Essence"
+        "name": "Eucalyptus Essence",
+        "price": 10.0
     },
     {
         "id": 15,
-        "name": "Rose Absolute"
+        "name": "Rose Absolute",
+        "price": 45.0
     },
     {
         "id": 16,
-        "name": "Jasmine Extract"
+        "name": "Jasmine Extract",
+        "price": 38.0
     },
     {
         "id": 17,
-        "name": "Amber Resin"
+        "name": "Amber Resin",
+        "price": 50.0
     },
     {
         "id": 18,
-        "name": "Vanilla Bean"
+        "name": "Vanilla Bean",
+        "price": 28.0
     },
     {
         "id": 19,
-        "name": "Patchouli Oil"
+        "name": "Patchouli Oil",
+        "price": 32.0
     },
     {
         "id": 20,
-        "name": "Bergamot Oil"
+        "name": "Bergamot Oil",
+        "price": 20.0
     },
     {
         "id": 21,
-        "name": "Iris Extract"
+        "name": "Iris Extract",
+        "price": 40.0
     },
     {
         "id": 22,
-        "name": "Tonka Bean Oil"
+        "name": "Tonka Bean Oil",
+        "price": 35.0
     },
     {
         "id": 23,
-        "name": "Mandarin Essence"
+        "name": "Mandarin Essence",
+        "price": 18.0
     },
     {
         "id": 24,
-        "name": "Orange Flower Absolute"
+        "name": "Orange Flower Absolute",
+        "price": 25.0
     },
     {
         "id": 25,
-        "name": "Peony Extract"
+        "name": "Peony Extract",
+        "price": 30.0
     },
     {
         "id": 26,
-        "name": "Raspberry Accord"
+        "name": "Raspberry Accord",
+        "price": 15.0
     }
 ]
