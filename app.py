@@ -98,8 +98,8 @@ def load_data():
 # Load data when the app starts
 load_data()
 
-@app.route('/login_register', methods=['GET', 'POST'])
-def login_register():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if 'username' in session:
         # If user is already logged in, redirect to /ItemTable
         return redirect(url_for('item_table'))
@@ -128,28 +128,28 @@ def login_register():
                 users.append({'username': username, 'password': hashed_password, 'type': 'user'})
                 save_users()
                 flash("Registration successful! You can now log in.")
-                return redirect(url_for('login_register'))
+                return redirect(url_for('login'))
 
-    return render_template('login_register.html')
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     """Logout the user."""
     session.clear()
     flash("You have been logged out.")
-    return redirect(url_for('login_register'))
+    return redirect(url_for('login'))
 
 def checkAuth():
     """Check if the user is authenticated or redirect to login."""
     if not users:
         # Redirect to login/register if no users are registered
         flash("No users registered. Please create an account first.")
-        return redirect(url_for('login_register'))
+        return redirect(url_for('login'))
     
     if 'username' not in session:
         # Redirect to login/register if the user is not logged in
         flash("Please log in to access this page.")
-        return redirect(url_for('login_register'))
+        return redirect(url_for('login'))
     
     # Return None if authentication is valid
     return None
@@ -507,7 +507,7 @@ def update_price(product_id):
     # Redirect back to the referring page
     return redirect(request.referrer)
 
-@app.route('/manage_users')
+@app.route('/manage_users', methods=['GET', 'POST'])
 def manage_users():
     """Admin-only page to manage users."""
     auth_redirect = checkAuth()
@@ -519,9 +519,21 @@ def manage_users():
         flash("You do not have permission to access this page.")
         return redirect(url_for('index'))
 
+    if request.method == 'POST':
+        # Add new user
+        username = request.form['username']
+        password = request.form['password']
+        if any(u['username'] == username for u in users):
+            flash("Username already exists. Please choose a different one.")
+        else:
+            hashed_password = pbkdf2_sha256.hash(password)  # Hash the password
+            users.append({'username': username, 'password': hashed_password, 'type': 'user'})
+            save_users()
+            flash(f"User {username} added successfully.")
+
     # Pass users to the template
     return render_template('manage_users.html', users=users)
-
+    
 @app.route('/update_user_role/<username>', methods=['POST'])
 def update_user_role(username):
     """Update the role of a user."""

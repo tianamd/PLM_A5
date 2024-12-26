@@ -30,6 +30,27 @@
     </style>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <h1>Register</h1>
+    <form method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" required>
+        <br>
+        <button type="submit" name="register">Register</button>
+    </form>
+
     <h1>User Management</h1>
     <table>
         <thead>
