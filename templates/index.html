@@ -213,9 +213,7 @@
                 <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
                 <th><a href="{{ url_for('index', sort='name', order='asc' if sort_column != 'name' or sort_order == 'desc' else 'desc') }}">Product Name</a></th>
                 <th><a href="{{ url_for('index', sort='format', order='asc' if sort_column != 'format' or sort_order == 'desc' else 'desc') }}">Format</a></th>
-                <th><a href="{{ url_for('index', sort='retail_price', order='asc' if sort_column != 'retail_price' or sort_order == 'desc' else 'desc') }}">Retail Price</a></th>
                 <th><a href="{{ url_for('index', sort='cost', order='asc' if sort_column != 'cost' or sort_order == 'desc' else 'desc') }}">Cost</a></th>
-                <th><a href="{{ url_for('index', sort='quantity', order='asc' if sort_column != 'quantity' or sort_order == 'desc' else 'desc') }}">Quantity</a></th>
                 <th>Notes</th>
                 <th>Composition</th>
                 <th>Description</th>
@@ -234,28 +232,12 @@
                     <td>{{ product.format }}</td>
                     <td>
                         {% if session.get('type') in ['admin', 'manager'] %}
-                            <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='retail_price') }}">
-                                <input type="number" name="value" value="{{ product.retail_price }}" step="0.01" min="0" style="width: 80px;">
-                            </form>
-                        {% else %}
-                        ${{ product.retail_price }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if session.get('type') in ['admin', 'manager'] %}
                             <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='cost') }}">
                                 <input type="number" name="value" value="{{ product.cost }}" step="0.01" min="0" style="width: 80px;">
                             </form>
                         {% else %}
                         ${{ product.cost }}
                         {% endif %}
-                    </td>
-
-                    <td>
-                        <form method="POST" action="{{ url_for('update_quantity', product_id=product.id) }}">
-                            <input type="number" name="quantity" value="{{ product.quantity }}" min="0" style="width: 80px;">
-                            
-                        </form>
                     </td>
 
                     <td>{{ ", ".join(product.notes) }}</td>

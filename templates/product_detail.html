@@ -14,21 +14,6 @@
     
     <p><strong>Description:</strong> {{ product.description }}</p>
     <p><strong>Format:</strong> {{ product.format }}</p>
-    <p><strong>Quantity:</strong>
-        <form method="POST" action="{{ url_for('update_quantity', product_id=product.id) }}" style="display:inline;">
-            <input type="number" name="quantity" value="{{ product.quantity }}" min="0" style="width: 80px;">
-        </form>
-    </p>
-
-    <p><strong>Retail Price:</strong>
-        {% if session.get('type') in ['admin', 'manager'] %}
-            <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='retail_price') }}" style="display:inline;">
-                <input type="number" name="value" value="{{ product.retail_price }}" step="0.01" min="0" style="width: 80px;">
-            </form>
-        {% else %}
-        ${{ product.retail_price }}
-        {% endif %}
-    </p>
     <p><strong>Cost:</strong>
         {% if session.get('type') in ['admin', 'manager'] %}
             <form method="POST" action="{{ url_for('update_price', product_id=product.id, field='cost') }}" style="display:inline;">

@@ -209,10 +209,6 @@ def index():
             continue
         if selected_format and selected_format != product['format']:
             continue
-        if min_price is not None and product['retail_price'] < min_price:
-            continue
-        if max_price is not None and product['retail_price'] > max_price:
-            continue
 
         # Add filtered product to the list
         filtered_products.append(processed_product)
@@ -242,7 +238,6 @@ def export_csv():
         return auth_redirects
 
     # Get filter parameters
-    price_type = request.args.get('price_type', 'retail_price')
     min_price = request.args.get('min_price', None, type=float)
     max_price = request.args.get('max_price', None, type=float)
     selected_ranges = request.args.getlist('ranges', type=int)
@@ -253,7 +248,6 @@ def export_csv():
     sort_order = request.args.get('order', 'asc')
 
     # Log received filters
-    print(f"Price Type: {price_type}")
     print(f"Min Price: {min_price}, Max Price: {max_price}")
     print(f"Selected Ranges: {selected_ranges}")
     print(f"Selected Names: {selected_names}")
@@ -320,7 +314,6 @@ def export_csv():
                 product.get('range_name', ''),
                 product.get('name', ''),
                 product.get('format', ''),
-                str(product.get('retail_price', '')),
                 str(product.get('cost', '')),
                 product.get('description', '').replace('\n', ' '),  # Avoid newlines in description
                 notes,
@@ -374,8 +367,6 @@ def add_product():
         name = request.form['name']
         description = request.form['description']
         format_ = request.form['format']
-        quantity = int(request.form['quantity'])
-        retail_price = float(request.form['retail_price'])
         cost = float(request.form['cost'])
 
         # Handle range
@@ -394,8 +385,6 @@ def add_product():
             'name': name,
             'description': description,
             'format': format_,
-            'quantity': quantity,
-            'retail_price': retail_price,
             'cost': cost,
             'id_range': range_id
         })
@@ -451,34 +440,9 @@ def delete_product(product_id):
 
     return redirect(url_for('index'))
 
-@app.route('/product/<int:product_id>/update_quantity', methods=['POST'])
-def update_quantity(product_id):
-    """Update the quantity of a product."""
-    auth_redirect = checkAuth()
-    if auth_redirect:
-        return auth_redirect
-
-    # Find the product
-    product = next((p for p in products if p['id'] == product_id), None)
-    if not product:
-        flash("Product not found.")
-        return redirect(url_for('index'))
-
-    # Update the quantity
-    try:
-        new_quantity = int(request.form['quantity'])
-        product['quantity'] = new_quantity
-        save_data()  # Save the updated data to JSON
-        flash(f"Quantity for {product['name']} updated successfully.")
-    except ValueError:
-        flash("Invalid quantity value.")
-
-    # Redirect back to the referring page
-    return redirect(request.referrer)
-
 @app.route('/product/<int:product_id>/update_price', methods=['POST'])
 def update_price(product_id):
-    """Update the retail price or cost of a product."""
+    """Update the cost of a product."""
     auth_redirect = checkAuth()
     if auth_redirect:
         return auth_redirect
@@ -491,7 +455,7 @@ def update_price(product_id):
 
     # Determine the field to update
     field = request.args.get('field')
-    if field not in ['retail_price', 'cost']:
+    if field not in ['cost']:
         flash("Invalid field.")
         return redirect(request.referrer)
 
