@@ -12,6 +12,8 @@
         </div>
     {% endif %}
     
+    <a href="{{ url_for('index') }}">Back to Home</a>
+    
     <form method="POST">
         <label>Name: <input type="text" name="name" required></label><br>
         <label>Description: <textarea name="description"></textarea></label><br>

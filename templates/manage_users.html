@@ -40,6 +40,8 @@
         {% endif %}
     {% endwith %}
     
+    <a href="{{ url_for('index') }}">Back to Home</a>
+
     <h1>Register</h1>
     <form method="POST">
         <label for="username">Username:</label>
@@ -87,6 +89,5 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{{ url_for('index') }}">Back to Home</a>
 </body>
 </html>
