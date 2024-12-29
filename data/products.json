@@ -6,8 +6,7 @@
         "description": "A deep and mysterious scent with warm notes of oud and cedarwood, balanced by the richness of amber.",
         "format": "100ml",
         "cost": 40.0,
-        "id_range": 1,
-        "range_name": "Men"
+        "id_range": 1
     },
     {
         "id": 2,
@@ -16,8 +15,7 @@
         "description": "A fresh and energizing blend of lemon and bergamot, with a smooth musk undertone.",
         "format": "100ml",
         "cost": 35.0,
-        "id_range": 1,
-        "range_name": "Men"
+        "id_range": 1
     },
     {
         "id": 3,
@@ -26,8 +24,7 @@
         "description": "An intense and captivating scent combining black pepper, leather, and earthy vetiver.",
         "format": "100ml",
         "cost": 45.0,
-        "id_range": 1,
-        "range_name": "Men"
+        "id_range": 1
     },
     {
         "id": 4,
@@ -36,8 +33,7 @@
         "description": "A tranquil and rich aroma with sandalwood, relaxing lavender, and a touch of ambergris.",
         "format": "100ml",
         "cost": 40.0,
-        "id_range": 1,
-        "range_name": "Men"
+        "id_range": 1
     },
     {
         "id": 5,
@@ -46,8 +42,7 @@
         "description": "A crisp and invigorating scent with mint and eucalyptus, softened by a musky base.",
         "format": "100ml",
         "cost": 30.0,
-        "id_range": 1,
-        "range_name": "Men"
+        "id_range": 1
     },
     {
         "id": 6,
@@ -56,8 +51,7 @@
         "description": "A luxurious and elegant blend of rose and jasmine, enhanced by a touch of white musk.",
         "format": "100ml",
         "cost": 42.0,
-        "id_range": 2,
-        "range_name": "Women"
+        "id_range": 2
     },
     {
         "id": 7,
@@ -66,8 +60,7 @@
         "description": "A warm and rich fragrance with sweet amber, vanilla, and earthy patchouli.",
         "format": "100ml",
         "cost": 48.0,
-        "id_range": 2,
-        "range_name": "Women"
+        "id_range": 2
     },
     {
         "id": 8,
@@ -76,8 +69,7 @@
         "description": "A delicate floral scent with notes of iris, fresh bergamot, and warm tonka bean.",
         "format": "100ml",
         "cost": 36.0,
-        "id_range": 2,
-        "range_name": "Women"
+        "id_range": 2
     },
     {
         "id": 9,
@@ -86,8 +78,7 @@
         "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
         "format": "100ml",
         "cost": 33.0,
-        "id_range": 2,
-        "range_name": "Women"
+        "id_range": 2
     },
     {
         "id": 10,
@@ -96,7 +87,6 @@
         "description": "A soft and romantic scent with sweet peony, juicy raspberry, and gentle woody undertones.",
         "format": "100ml",
         "cost": 38.0,
-        "id_range": 2,
-        "range_name": "Women"
+        "id_range": 2
     }
 ]
