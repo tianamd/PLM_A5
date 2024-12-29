@@ -2,6 +2,7 @@ import json
 import csv
 from flask import Flask, Response, stream_with_context, render_template, request, redirect, url_for, session, flash
 from passlib.hash import pbkdf2_sha256
+from datetime import datetime  # Add this at the top of the file
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Secret key for session management
@@ -470,6 +471,9 @@ def add_product():
         # Calculate cost based on selected compositions
         cost = sum(comp['price'] for comp in compositions if comp['id'] in product_compositions_list)
 
+        # Get today's date in JJ/MM/AAAA format
+        start_date = datetime.now().strftime("%d/%m/%Y")
+
         # Add product to the database
         products.append({
             'id': product_id,
@@ -478,7 +482,9 @@ def add_product():
             'format': format,
             'cost': cost,
             'id_range': range_id,
-            'ref': ref
+            'ref': ref, 
+            'status':"Initial", 
+            "start_date":start_date
         })
 
         save_data()  # Save the updated data
