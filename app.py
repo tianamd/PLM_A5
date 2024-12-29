@@ -349,80 +349,6 @@ def product_detail(product_id):
 
     return render_template('product_detail.html', product=product, notes=related_notes, compositions=related_compositions)
 
-@app.route('/product/update/<int:product_id>', methods=['POST'])
-def update_product(product_id):
-    """Update product details."""
-    auth_redirect = checkAuth()
-    if auth_redirect:
-        return auth_redirect
-
-    # Ensure only admin or manager can perform this action
-    if session.get('type') not in ['admin', 'manager']:
-        flash("You do not have permission to update products.")
-        return redirect(url_for('product_detail', product_id=product_id))
-
-    # Find the product
-    product = next((p for p in products if p['id'] == product_id), None)
-    if not product:
-        flash("Product not found.")
-        return redirect(url_for('index'))
-
-    # Update product fields
-    product['name'] = request.form['name']
-    product['description'] = request.form['description']
-    product['format'] = request.form['format']
-    product['id_range'] = int(request.form['range_name'])
-
-    # Handle notes
-    selected_notes = request.form.getlist('notes')
-    new_notes = request.form.get('new_notes', '').split(',')
-    # Remove existing notes for this product
-    global product_notes
-    product_notes = [pn for pn in product_notes if pn['id_product'] != product_id]
-    # Add new and selected notes
-    for note_name in new_notes:
-        note_name = note_name.strip()
-        if note_name:
-            note = next((n for n in notes if n['name'] == note_name), None)
-            if not note:
-                # Add new note
-                note_id = len(notes) + 1
-                notes.append({'id': note_id, 'name': note_name})
-            else:
-                note_id = note['id']
-            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': note_id})
-    for note_id in selected_notes:
-        product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note_id)})
-
-    # Handle compositions
-    selected_compositions = request.form.getlist('compositions')
-    new_compositions = request.form.get('new_compositions', '').split(',')
-    # Remove existing compositions for this product
-    global product_compositions
-    product_compositions = [pc for pc in product_compositions if pc['id_product'] != product_id]
-    # Add new and selected compositions
-    for comp_name in new_compositions:
-        comp_name = comp_name.strip()
-        if comp_name:
-            comp = next((c for c in compositions if c['name'] == comp_name), None)
-            if not comp:
-                # Add new composition
-                comp_id = len(compositions) + 1
-                compositions.append({'id': comp_id, 'name': comp_name, 'price': 0.0})  # Default price
-            else:
-                comp_id = comp['id']
-            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': comp_id})
-    for comp_id in selected_compositions:
-        product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(comp_id)})
-
-    # Recalculate cost based on updated compositions
-    recalculate_product_cost(product_id)
-
-    # Save changes
-    save_data()
-    flash(f"Product {product['name']} updated successfully!")
-    return redirect(url_for('product_detail', product_id=product_id))
-
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
     """Add a new product with notes, compositions, and range."""
@@ -492,6 +418,61 @@ def add_product():
         return redirect(url_for('index'))
 
     return render_template('add_product.html', notes=notes, compositions=compositions, ranges=ranges)
+
+@app.route('/product/update/<int:product_id>', methods=['GET', 'POST'])
+def update_product(product_id):
+    """Update a product's details."""
+    # Ensure proper authentication
+    if session.get('type') not in ['manager', 'admin']:
+        flash("You do not have permission to update products.")
+        return redirect(url_for('index'))
+
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        # Update product details
+        product['name'] = request.form['name']
+        product['description'] = request.form['description']
+        product['format'] = request.form['format']
+        product['id_range'] = int(request.form['range'])
+
+        # Update notes
+        selected_notes = request.form.getlist('notes')
+        product_notes[:] = [pn for pn in product_notes if pn['id_product'] != product_id]
+        for note_id in selected_notes:
+            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note_id)})
+
+        # Update compositions
+        selected_compositions = request.form.getlist('compositions')
+        product_compositions[:] = [pc for pc in product_compositions if pc['id_product'] != product_id]
+        for composition_id in selected_compositions:
+            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(composition_id)})
+
+        # Recalculate cost
+        composition_ids = [int(c['id_composition']) for c in product_compositions if c['id_product'] == product_id]
+        product['cost'] = sum(c['price'] for c in compositions if c['id'] in composition_ids)
+
+        save_data()
+        flash("Product updated successfully.")
+        return redirect(url_for('product_detail', product_id=product_id))
+
+    # Fetch range names and related notes/compositions
+    related_notes = [n['id'] for n in notes if any(pn['id_note'] == n['id'] and pn['id_product'] == product_id for pn in product_notes)]
+    related_compositions = [c['id'] for c in compositions if any(pc['id_composition'] == c['id'] and pc['id_product'] == product_id for pc in product_compositions)]
+
+    return render_template(
+        'update_product.html',
+        product=product,
+        ranges=ranges,
+        notes=notes,
+        compositions=compositions,
+        related_notes=related_notes,
+        related_compositions=related_compositions
+    )
 
 @app.route('/product/delete/<int:product_id>', methods=['POST'])
 def delete_product(product_id):

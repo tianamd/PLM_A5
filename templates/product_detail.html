@@ -36,43 +36,5 @@
             <li>{{ composition }}</li>
         {% endfor %}
     </ul>
-
-    {% if session.get('type') in ['admin', 'manager'] %}
-        <h2>Edit Product</h2>
-        <form method="POST" action="{{ url_for('update_product', product_id=product.id) }}">
-            <label>Name: <input type="text" name="name" value="{{ product.name }}" required></label><br>
-            <label>Description: <textarea name="description">{{ product.description }}</textarea></label><br>
-            <label>Format: <input type="text" name="format" value="{{ product.format }}" required></label><br>
-
-            <h3>Range</h3>
-            <select name="range" required>
-                {% for range in ranges %}
-                    <option value="{{ range.id }}" {% if range.id == product.id_range %}selected{% endif %}>{{ range.name }}</option>
-                {% endfor %}
-            </select>
-
-            <h3>Notes</h3>
-            {% for note in notes %}
-                <label>
-                    <input type="checkbox" name="notes" value="{{ note.id }}" 
-                        {% if note in product.notes %}checked{% endif %}>
-                    {{ note.name }}
-                </label><br>
-            {% endfor %}
-            <input type="text" name="new_notes" placeholder="Add new note(s), separated by commas"><br>
-
-            <h3>Compositions</h3>
-            {% for composition in compositions %}
-                <label>
-                    <input type="checkbox" name="compositions" value="{{ composition.id }}" 
-                        {% if composition in product.compositions %}checked{% endif %}>
-                    {{ composition.name }}
-                </label><br>
-            {% endfor %}
-            <input type="text" name="new_compositions" placeholder="Add new composition(s), separated by commas"><br>
-
-            <button type="submit">Update</button>
-        </form>
-    {% endif %}
 </body>
 </html>

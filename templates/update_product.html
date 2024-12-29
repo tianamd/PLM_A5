@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Product</title>
+</head>
+<body>
+    <h1>Update Product: {{ product.name }}</h1>
+    <form method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ product.name }}" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required>{{ product.description }}</textarea><br><br>
+
+        <label for="range">Range:</label>
+        <select id="range" name="range">
+            {% for range in ranges %}
+                <option value="{{ range.id }}" {% if range.id == product.id_range %}selected{% endif %}>
+                    {{ range.name }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="format">Format:</label>
+        <input type="text" id="format" name="format" value="{{ product.format }}" required><br><br>
+
+        <label for="notes">Notes:</label><br>
+        {% for note in notes %}
+            <label>
+                <input type="checkbox" name="notes" value="{{ note.id }}" {% if note.id in related_notes %}checked{% endif %}>
+                {{ note.name }}
+            </label><br>
+        {% endfor %}
+
+        <label for="compositions">Compositions:</label><br>
+        {% for composition in compositions %}
+            <label>
+                <input type="checkbox" name="compositions" value="{{ composition.id }}" {% if composition.id in related_compositions %}checked{% endif %}>
+                {{ composition.name }}
+            </label><br>
+        {% endfor %}
+
+        <button type="submit">Update Product</button>
+    </form>
+</body>
+</html>
