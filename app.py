@@ -348,6 +348,80 @@ def product_detail(product_id):
 
     return render_template('product_detail.html', product=product, notes=related_notes, compositions=related_compositions)
 
+@app.route('/product/update/<int:product_id>', methods=['POST'])
+def update_product(product_id):
+    """Update product details."""
+    auth_redirect = checkAuth()
+    if auth_redirect:
+        return auth_redirect
+
+    # Ensure only admin or manager can perform this action
+    if session.get('type') not in ['admin', 'manager']:
+        flash("You do not have permission to update products.")
+        return redirect(url_for('product_detail', product_id=product_id))
+
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    # Update product fields
+    product['name'] = request.form['name']
+    product['description'] = request.form['description']
+    product['format'] = request.form['format']
+    product['id_range'] = int(request.form['range_name'])
+
+    # Handle notes
+    selected_notes = request.form.getlist('notes')
+    new_notes = request.form.get('new_notes', '').split(',')
+    # Remove existing notes for this product
+    global product_notes
+    product_notes = [pn for pn in product_notes if pn['id_product'] != product_id]
+    # Add new and selected notes
+    for note_name in new_notes:
+        note_name = note_name.strip()
+        if note_name:
+            note = next((n for n in notes if n['name'] == note_name), None)
+            if not note:
+                # Add new note
+                note_id = len(notes) + 1
+                notes.append({'id': note_id, 'name': note_name})
+            else:
+                note_id = note['id']
+            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': note_id})
+    for note_id in selected_notes:
+        product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note_id)})
+
+    # Handle compositions
+    selected_compositions = request.form.getlist('compositions')
+    new_compositions = request.form.get('new_compositions', '').split(',')
+    # Remove existing compositions for this product
+    global product_compositions
+    product_compositions = [pc for pc in product_compositions if pc['id_product'] != product_id]
+    # Add new and selected compositions
+    for comp_name in new_compositions:
+        comp_name = comp_name.strip()
+        if comp_name:
+            comp = next((c for c in compositions if c['name'] == comp_name), None)
+            if not comp:
+                # Add new composition
+                comp_id = len(compositions) + 1
+                compositions.append({'id': comp_id, 'name': comp_name, 'price': 0.0})  # Default price
+            else:
+                comp_id = comp['id']
+            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': comp_id})
+    for comp_id in selected_compositions:
+        product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(comp_id)})
+
+    # Recalculate cost based on updated compositions
+    recalculate_product_cost(product_id)
+
+    # Save changes
+    save_data()
+    flash(f"Product {product['name']} updated successfully!")
+    return redirect(url_for('product_detail', product_id=product_id))
+
 @app.route('/product/add', methods=['GET', 'POST'])
 def add_product():
     """Add a new product with notes, compositions, and range."""
@@ -360,9 +434,15 @@ def add_product():
         product_id = len(products) + 1
         name = request.form['name']
         description = request.form['description']
-        format_ = request.form['format']
+        format = request.form['format']
         range_id = int(request.form['range'])
-        
+
+        # Retrieve range name
+        range_name = next((r['name'] for r in ranges if r['id'] == range_id), "Unknown")
+
+        # Generate the ref field
+        ref = f"FP{range_name[0].upper()}{''.join(word[0].upper() for word in name.split())}_1"
+
         # Handle notes
         selected_notes = request.form.getlist('notes')
         new_notes = request.form.getlist('new_notes')
@@ -395,9 +475,10 @@ def add_product():
             'id': product_id,
             'name': name,
             'description': description,
-            'format': format_,
+            'format': format,
             'cost': cost,
-            'id_range': range_id
+            'id_range': range_id,
+            'ref': ref
         })
 
         save_data()  # Save the updated data

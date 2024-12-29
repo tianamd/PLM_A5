@@ -210,6 +210,7 @@
     <table>
         <thead>
             <tr>
+                <th><a href="{{ url_for('index', sort='ref', order='asc' if sort_column != 'ref' or sort_order == 'desc' else 'desc') }}">Reference</a></th>
                 <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
                 <th><a href="{{ url_for('index', sort='name', order='asc' if sort_column != 'name' or sort_order == 'desc' else 'desc') }}">Product Name</a></th>
                 <th><a href="{{ url_for('index', sort='format', order='asc' if sort_column != 'format' or sort_order == 'desc' else 'desc') }}">Format</a></th>
@@ -225,6 +226,7 @@
         <tbody>
             {% for product in products %}
                 <tr>
+                    <td>{{ product.ref }}</td>
                     <td>{{ product.range_name }}</td>
                     <td>
                         <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>

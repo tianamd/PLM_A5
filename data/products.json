@@ -1,6 +1,7 @@
 [
     {
         "id": 1,
+        "ref": "FPMMO_1",
         "name": "Mystic Oud",
         "description": "A deep and mysterious scent with warm notes of oud and cedarwood, balanced by the richness of amber.",
         "format": "100ml",
@@ -10,6 +11,7 @@
     },
     {
         "id": 2,
+        "ref": "FPMCS_1",
         "name": "Citrus Storm",
         "description": "A fresh and energizing blend of lemon and bergamot, with a smooth musk undertone.",
         "format": "100ml",
@@ -19,6 +21,7 @@
     },
     {
         "id": 3,
+        "ref": "FPMSL_1",
         "name": "Spicy Leather",
         "description": "An intense and captivating scent combining black pepper, leather, and earthy vetiver.",
         "format": "100ml",
@@ -28,6 +31,7 @@
     },
     {
         "id": 4,
+        "ref": "FPMMW_1",
         "name": "Midnight Woods",
         "description": "A tranquil and rich aroma with sandalwood, relaxing lavender, and a touch of ambergris.",
         "format": "100ml",
@@ -37,6 +41,7 @@
     },
     {
         "id": 5,
+        "ref": "FPMFH_1",
         "name": "Frosted Horizon",
         "description": "A crisp and invigorating scent with mint and eucalyptus, softened by a musky base.",
         "format": "100ml",
@@ -46,6 +51,7 @@
     },
     {
         "id": 6,
+        "ref": "FPWVR_1",
         "name": "Velvet Rose",
         "description": "A luxurious and elegant blend of rose and jasmine, enhanced by a touch of white musk.",
         "format": "100ml",
@@ -55,6 +61,7 @@
     },
     {
         "id": 7,
+        "ref": "FPWGA_1",
         "name": "Golden Amber",
         "description": "A warm and rich fragrance with sweet amber, vanilla, and earthy patchouli.",
         "format": "100ml",
@@ -64,6 +71,7 @@
     },
     {
         "id": 8,
+        "ref": "FPWIB_1",
         "name": "Iris Bloom",
         "description": "A delicate floral scent with notes of iris, fresh bergamot, and warm tonka bean.",
         "format": "100ml",
@@ -73,6 +81,7 @@
     },
     {
         "id": 9,
+        "ref": "FPWCC_1",
         "name": "Citrus Charm",
         "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
         "format": "100ml",
@@ -82,6 +91,7 @@
     },
     {
         "id": 10,
+        "ref": "FPWSP_1",
         "name": "Sweet Peony",
         "description": "A soft and romantic scent with sweet peony, juicy raspberry, and gentle woody undertones.",
         "format": "100ml",
