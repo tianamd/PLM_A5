@@ -421,6 +421,23 @@ def update_product(product_id):
         return redirect(url_for('index'))
 
     if request.method == 'POST':
+        # Log the current state of the product before modification
+         # Log the current state of the product before modification
+        previous_state = {
+            "id": product["id"],
+            "name": product["name"],
+            "description": product["description"],
+            "format": product["format"],
+            "cost": product["cost"],
+            "id_range": product["id_range"],
+            "ref": product["ref"],
+            "status": product["status"],
+            "start_date": product["start_date"],
+            "ids_composition": list(product.get("ids_composition", [])),
+            "ids_note": list(product.get("ids_note", [])),
+            "persons_in_charge": list(product.get("persons_in_charge", []))
+        }
+
         # Update product details
         product['name'] = request.form['name']
         product['description'] = request.form['description']
@@ -458,8 +475,25 @@ def update_product(product_id):
         # Update product with new compositions
         product['ids_composition'] = composition_ids
         # Recalculate cost
-        composition_ids = [int(c['id_composition']) for c in product_compositions if c['id_product'] == product_id]
+        composition_ids = product.get('ids_composition', [])
         product['cost'] = sum(c['price'] for c in compositions if c['id'] in composition_ids)
+
+        # Update the reference
+        ref_parts = product['ref'].rsplit('_', 1)
+        if len(ref_parts) == 2 and ref_parts[1].isdigit():
+            product['ref'] = f"{ref_parts[0]}_{int(ref_parts[1]) + 1}"
+        else:
+            product['ref'] = f"{product['ref']}_"
+
+        # Add to history
+        if 'history' not in product:
+            product['history'] = []
+        product['history'].append({
+            "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "modified_by": session['username'],
+            "comment": request.form.get('comment', '').strip(),
+            "previous_state": previous_state
+        })
 
         save_data()
         flash("Product updated successfully.")

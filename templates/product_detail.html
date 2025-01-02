@@ -28,7 +28,7 @@
             <li>{{ person }}</li>
         {% endfor %}
     </ul>
-    
+
     <h2>Notes</h2>
     <ul>
         {% for note in notes %}
@@ -42,5 +42,25 @@
             <li>{{ composition }}</li>
         {% endfor %}
     </ul>
+
+    <h2>Modification History</h2>
+        <table border="1">
+            <tr>
+                <th>Date</th>
+                <th>Modified By</th>
+                <th>Comment</th>
+                <th>Previous State</th>
+            </tr>
+            {% for entry in product.history %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.modified_by }}</td>
+                <td>{{ entry.comment }}</td>
+                <td>
+                    <pre>{{ entry.previous_state | tojson(indent=4) }}</pre>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
 </body>
 </html>
