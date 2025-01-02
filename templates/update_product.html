@@ -26,6 +26,10 @@
         <label for="format">Format:</label>
         <input type="text" id="format" name="format" value="{{ product.format }}" required><br><br>
 
+        <label for="persons_in_charge">Add Persons in Charge:</label>
+        <textarea id="persons_in_charge" name="persons_in_charge">{{ ", ".join(product.persons_in_charge) }}</textarea>
+        <small>Separate multiple names with commas.</small><br><br>
+
         <label for="notes">Notes:</label><br>
         {% for note in notes %}
             <label>
@@ -33,7 +37,7 @@
                 {{ note.name }}
             </label><br>
         {% endfor %}
-
+        
         <label for="compositions">Compositions:</label><br>
         {% for composition in compositions %}
             <label>

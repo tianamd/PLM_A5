@@ -400,6 +400,9 @@ def add_product():
         # Get today's date in JJ/MM/AAAA format
         start_date = datetime.now().strftime("%d/%m/%Y")
 
+        # Handle persons in charge
+        persons_in_charge = [p.strip() for p in request.form['persons_in_charge'].split(',') if p.strip()]
+
         # Add product to the database
         products.append({
             'id': product_id,
@@ -410,7 +413,8 @@ def add_product():
             'id_range': range_id,
             'ref': ref, 
             'status':"Initial", 
-            "start_date":start_date
+            "start_date":start_date,
+            'persons_in_charge': persons_in_charge
         })
 
         save_data()  # Save the updated data
@@ -439,6 +443,8 @@ def update_product(product_id):
         product['description'] = request.form['description']
         product['format'] = request.form['format']
         product['id_range'] = int(request.form['range'])
+
+        product['persons_in_charge'] = [p.strip() for p in request.form['persons_in_charge'].split(',') if p.strip()]
 
         # Update notes
         selected_notes = request.form.getlist('notes')

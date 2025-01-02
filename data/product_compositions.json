@@ -150,21 +150,6 @@
         "id_composition": 22
     },
     {
-        "id": 31,
-        "id_product": 9,
-        "id_composition": 1
-    },
-    {
-        "id": 32,
-        "id_product": 9,
-        "id_composition": 23
-    },
-    {
-        "id": 33,
-        "id_product": 9,
-        "id_composition": 24
-    },
-    {
         "id": 34,
         "id_product": 10,
         "id_composition": 1
@@ -183,5 +168,20 @@
         "id": 37,
         "id_product": 10,
         "id_composition": 5
+    },
+    {
+        "id": 35,
+        "id_product": 9,
+        "id_composition": 1
+    },
+    {
+        "id": 36,
+        "id_product": 9,
+        "id_composition": 23
+    },
+    {
+        "id": 37,
+        "id_product": 9,
+        "id_composition": 24
     }
 ]

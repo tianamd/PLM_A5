@@ -211,6 +211,7 @@
         <thead>
             <tr>
                 <th><a href="{{ url_for('index', sort='status', order='asc' if sort_column != 'status' or sort_order == 'desc' else 'desc') }}">Status</a></th>
+                <th><a href="{{ url_for('index', sort='persons_in_charge', order='asc' if sort_column != 'persons_in_charge' or sort_order == 'desc' else 'desc') }}"></a>Persons in Charge</a></th>
                 <th><a href="{{ url_for('index', sort='start_date', order='asc' if sort_column != 'start_date' or sort_order == 'desc' else 'desc') }}">Start Date</a></th>
                 <th><a href="{{ url_for('index', sort='ref', order='asc' if sort_column != 'ref' or sort_order == 'desc' else 'desc') }}">Reference</a></th>
                 <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
@@ -229,6 +230,7 @@
             {% for product in products %}
                 <tr>
                     <td>{{ product.status }}</td>
+                    <td>{{ ", ".join(product.persons_in_charge) }}</td>
                     <td>{{ product.start_date }}</td>
                     <td>{{ product.ref }}</td>
                     <td>{{ product.range_name }}</td>

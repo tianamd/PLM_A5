@@ -22,7 +22,13 @@
     <p><strong>Format:</strong> {{ product.format }}</p>
     <p><strong>Cost:</strong> {{ product.cost }} €</p>
 
-
+    <h2>Persons in Charge</h2>
+    <ul>
+        {% for person in product.persons_in_charge %}
+            <li>{{ person }}</li>
+        {% endfor %}
+    </ul>
+    
     <h2>Notes</h2>
     <ul>
         {% for note in notes %}

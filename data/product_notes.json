@@ -120,21 +120,6 @@
         "id_note": 20
     },
     {
-        "id": 25,
-        "id_product": 9,
-        "id_note": 21
-    },
-    {
-        "id": 26,
-        "id_product": 9,
-        "id_note": 22
-    },
-    {
-        "id": 27,
-        "id_product": 9,
-        "id_note": 6
-    },
-    {
         "id": 28,
         "id_product": 10,
         "id_note": 23
@@ -148,5 +133,20 @@
         "id": 30,
         "id_product": 10,
         "id_note": 25
+    },
+    {
+        "id": 28,
+        "id_product": 9,
+        "id_note": 6
+    },
+    {
+        "id": 29,
+        "id_product": 9,
+        "id_note": 21
+    },
+    {
+        "id": 30,
+        "id_product": 9,
+        "id_note": 22
     }
 ]
