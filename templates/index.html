@@ -4,267 +4,204 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Lifecycle Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            text-align: center;
-        }
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .filter-group {
-            margin: 10px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .collapsible {
-            background-color: #f1f1f1;
-            color: black;
-            cursor: pointer;
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-            outline: none;
-            font-size: 16px;
-            width: 100%;
-        }
-        .collapsible:hover {
-            background-color: #ddd;
-        }
-        .content {
-            display: none;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            border-top: none;
-            background-color: #f9f9f9;
-            overflow-y: auto;
-            max-height: 150px;
-        }
-        .content label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .content input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: left;
-        }
-        th a {
-            text-decoration: none;
-            color: black;
-        }
-        th a:hover {
-            text-decoration: underline;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-    </style>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
+<style>
+
+body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .bg-darkmode {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+        }
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #005bb5;
+        }
+        .btn-secondary {
+            background-color: #444;
+            border-color: #555;
+        }
+        .btn-info {
+            background-color: #0056b3;
+            border-color: #004494;
+        }
+        .table {
+            background-color: #1f1f1f;
+        }
+        .table thead {
+            background-color: #2c2c2c;
+        }
+        a {
+            color: #66b2ff;
+        }
+        a:hover {
+            color: #99ccff;
+        }
+
+</style>
 <body>
-    <h1>Product Lifecycle Management</h1>
+
+<div class="container my-4 bg-darkmode">
+    <!-- Header -->
+    <h1 class="text-center mb-4">Product Lifecycle Management</h1>
+
     {% if session.get('username') %}
-        <div style="text-align: right;">
-            Logged in as: {{ session['username'] }} | 
-            <a href="{{ url_for('logout') }}">Logout</a>
-        </div>
+    <div class="text-end mb-3">
+        <span>Logged in as: {{ session['username'] }}</span> |
+        <a href="{{ url_for('logout') }}" class="btn btn-link">Logout</a>
+    </div>
     {% endif %}
-    
+
+    <!-- Admin/Manager Actions -->
     {% if session.get('type') in ['admin', 'manager'] %}
-        <a href="{{ url_for('add_product') }}">Add Product</a>
+    <div class="mb-3">
+        <a href="{{ url_for('add_product') }}" class="btn btn-success">Add Product</a>
+
     {% endif %}
-    
+
     {% if session.get('type') == 'admin' %}
+    
         <a href="{{ url_for('manage_users') }}" class="btn btn-primary">Manage Users</a>
+    </div>
     {% endif %}
 
-
+    <!-- Toggle Filters Button -->
+    <div class="text-center mb-4">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">Afficher les filtres</button>
+    </div>
 
     <!-- Filter Form -->
-    <form method="GET" action="{{ url_for('index') }}">
-
-        <!-- Ranges -->
-        <div class="filter-group">
-            <button type="button" class="collapsible">Range</button>
-            <div class="content">
-                {% for range in ranges %}
-                    <label>
-                        <input type="checkbox" name="ranges" value="{{ range.id }}" 
-                               {% if range.id in selected_ranges %}checked{% endif %}>
-                        {{ range.name }}
-                    </label>
-                {% endfor %}
+    <div class="collapse" id="filtersCollapse">
+        <form method="GET" action="{{ url_for('index') }}" class="row g-3">
+            <!-- Range Filter -->
+            <div class="col-md-4">
+                <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#rangeCollapse" aria-expanded="false" aria-controls="rangeCollapse">Range</button>
+                <div class="collapse" id="rangeCollapse">
+                    {% for range in ranges %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="ranges" value="{{ range.id }}" {% if range.id in selected_ranges %}checked{% endif %}>
+                        <label class="form-check-label">{{ range.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
-        <!-- Product Name -->
-        <div class="filter-group">
-            <button type="button" class="collapsible">Product Name</button>
-            <div class="content">
-                {% for product in products %}
-                    <label>
-                        <input type="checkbox" name="name" value="{{ product.name }}" 
-                               {% if product.name in request.args.getlist('name') %}checked{% endif %}>
-                        {{ product.name }}
-                    </label>
-                {% endfor %}
+            <!-- Product Name Filter -->
+            <div class="col-md-4">
+                <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#nameCollapse" aria-expanded="false" aria-controls="nameCollapse">Product Name</button>
+                <div class="collapse" id="nameCollapse">
+                    {% for product in products %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="name" value="{{ product.name }}" {% if product.name in request.args.getlist('name') %}checked{% endif %}>
+                        <label class="form-check-label">{{ product.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
-        <!-- Notes -->
-        <div class="filter-group">
-            <button type="button" class="collapsible">Notes</button>
-            <div class="content">
-                {% for note in notes %}
-                    <label>
-                        <input type="checkbox" name="notes" value="{{ note.name }}" 
-                               {% if note.name in request.args.getlist('notes') %}checked{% endif %}>
-                        {{ note.name }}
-                    </label>
-                {% endfor %}
+            <!-- Notes Filter -->
+            <div class="col-md-4">
+                <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#notesCollapse" aria-expanded="false" aria-controls="notesCollapse">Notes</button>
+                <div class="collapse" id="notesCollapse">
+                    {% for note in notes %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="notes" value="{{ note.name }}" {% if note.name in request.args.getlist('notes') %}checked{% endif %}>
+                        <label class="form-check-label">{{ note.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
-        <!-- Compositions -->
-        <div class="filter-group">
-            <button type="button" class="collapsible">Compositions</button>
-            <div class="content">
-                {% for composition in compositions %}
-                    <label>
-                        <input type="checkbox" name="compositions" value="{{ composition.name }}" 
-                               {% if composition.name in request.args.getlist('compositions') %}checked{% endif %}>
-                        {{ composition.name }}
-                    </label>
-                {% endfor %}
+            <!-- Compositions Filter -->
+            <div class="col-md-4">
+                <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#compositionsCollapse" aria-expanded="false" aria-controls="compositionsCollapse">Compositions</button>
+                <div class="collapse" id="compositionsCollapse">
+                    {% for composition in compositions %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="compositions" value="{{ composition.name }}" {% if composition.name in request.args.getlist('compositions') %}checked{% endif %}>
+                        <label class="form-check-label">{{ composition.name }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
-        <!-- Format -->
-        <div class="filter-group">
-            <button type="button" class="collapsible">Format</button>
-            <div class="content">
-                {% for format in formats %}
-                    <label>
-                        <input type="checkbox" name="format" value="{{ format }}" 
-                               {% if request.args.get('format') == format %}checked{% endif %}>
-                        {{ format }}
-                    </label>
-                {% endfor %}
-            </div>
-        </div>
+                <!-- Price Range Filter -->
+                <div class="col-md-4">
+                    <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#priceRangeCollapse" aria-expanded="false" aria-controls="priceRangeCollapse">Price Range</button>
+                    <div class="collapse" id="priceRangeCollapse">
+                        <label for="priceRangeFilter" class="form-label">Min - Max</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" name="min_price" id="priceRangeFilter" placeholder="Min Price" value="{{ request.args.get('min_price', '') }}">
+                            <input type="number" class="form-control" name="max_price" placeholder="Max Price" value="{{ request.args.get('max_price', '') }}">
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Price Range -->
-        <div class="filter-group">
-            <label for="min_price">Price Range (Retail Price):</label>
-            <input type="number" name="min_price" id="min_price" placeholder="Min Price" 
-                   value="{{ request.args.get('min_price', '') }}">
-            <input type="number" name="max_price" id="max_price" placeholder="Max Price" 
-                   value="{{ request.args.get('max_price', '') }}">
-        </div>
-
-        <!-- Submit Button -->
-        <div class="filter-group" style="align-self: center;">
-            <button type="submit">Apply Filters</button>
-        </div>
-        
-            <!-- Export CSV Button -->
-        <div class="filter-group" style="align-self: center;">
-            <button type="submit" formaction="{{ url_for('export_csv') }}">Export CSV</button>
-        </div>    
-    </form>
-    
+                 <!-- Buttons -->
+                 <div class="col-md-4 align-self-center">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </div>
+        </form>
+    </div>
 
     <!-- Product Table -->
-    <table>
-        <thead>
-            <tr>
-                <th><a href="{{ url_for('index', sort='status', order='asc' if sort_column != 'status' or sort_order == 'desc' else 'desc') }}">Status</a></th>
-                <th><a href="{{ url_for('index', sort='start_date', order='asc' if sort_column != 'start_date' or sort_order == 'desc' else 'desc') }}">Start Date</a></th>
-                <th><a href="{{ url_for('index', sort='ref', order='asc' if sort_column != 'ref' or sort_order == 'desc' else 'desc') }}">Reference</a></th>
-                <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
-                <th><a href="{{ url_for('index', sort='name', order='asc' if sort_column != 'name' or sort_order == 'desc' else 'desc') }}">Product Name</a></th>
-                <th><a href="{{ url_for('index', sort='format', order='asc' if sort_column != 'format' or sort_order == 'desc' else 'desc') }}">Format</a></th>
-                <th><a href="{{ url_for('index', sort='cost', order='asc' if sort_column != 'cost' or sort_order == 'desc' else 'desc') }}">Cost</a></th>
-                <th>Notes</th>
-                <th>Composition</th>
-                <th>Description</th>
-                {% if session.get('type') == 'admin' %}
-                    <th>Action</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
+    <div class="table-responsive mt-4 ">
+
+                    <!-- Buttons -->
+                    <div class="col-md-4 align-self-center">
+                        <button type="submit" formaction="{{ url_for('export_csv') }}" class="btn btn-secondary">Export CSV</button>
+                    </div>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
                 <tr>
-                    <td>{{ product.status }}</td>
-                    <td>{{ product.start_date }}</td>
-                    <td>{{ product.ref }}</td>
+                    <th><a href="{{ url_for('index', sort='range_name', order='asc' if sort_column != 'range_name' or sort_order == 'desc' else 'desc') }}">Range</a></th>
+                    <th><a href="{{ url_for('index', sort='name', order='asc' if sort_column != 'name' or sort_order == 'desc' else 'desc') }}">Product Name</a></th>
+                    <th><a href="{{ url_for('index', sort='format', order='asc' if sort_column != 'format' or sort_order == 'desc' else 'desc') }}">Format</a></th>
+                    <th><a href="{{ url_for('index', sort='retail_price', order='asc' if sort_column != 'retail_price' or sort_order == 'desc' else 'desc') }}">Retail Price</a></th>
+                    <th><a href="{{ url_for('index', sort='cost', order='asc' if sort_column != 'cost' or sort_order == 'desc' else 'desc') }}">Cost</a></th>
+                    <th><a href="{{ url_for('index', sort='quantity', order='asc' if sort_column != 'quantity' or sort_order == 'desc' else 'desc') }}">Quantity</a></th>
+                    <th>Notes</th>
+                    <th>Composition</th>
+                    <th>Description</th>
+                    {% if session.get('type') == 'admin' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
                     <td>{{ product.range_name }}</td>
-                    <td>
-                        <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
-                    </td>
+                    <td><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a></td>
                     <td>{{ product.format }}</td>
-                    <td>{{ product.cost }}</td>
+                    <td>${{ product.retail_price }}</td>
+                    <td>${{ product.cost }}</td>
+                    <td>{{ product.quantity }}</td>
                     <td>{{ ", ".join(product.notes) }}</td>
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>
-                        <td>
-                            {% if session.get('type') in ['manager', 'admin'] %}
-                                <form action="{{ url_for('update_product', product_id=product.id) }}" method="GET" style="display:inline;">
-                                    <button type="submit">Update</button>
-                                </form>
-                            {% endif %}
-                            {% if session.get('type') == 'admin' %}
-                                <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
-                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
-                                </form>
-                            {% endif %}
-                        </td>
+                    {% if session.get('type') == 'admin' %}
+                    <td>
+                        <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+                        </form>
+                    </td>
+                    {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-    <!-- JavaScript for Collapsible Sections -->
-    <script>
-        document.querySelectorAll('.collapsible').forEach(button => {
-            button.addEventListener('click', () => {
-                const content = button.nextElementSibling;
-                content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            });
-        });
-    </script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
