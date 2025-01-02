@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validate Product Status</title>
+</head>
+<body>
+    <h1>Validate Product Status</h1>
+    <h2>{{ product.name }}</h2>
+    <p><strong>Current Status:</strong> {{ product.status }}</p>
+
+    <form action="{{ url_for('validate_product_status', product_id=product.id) }}" method="POST">
+        <label>
+            <input type="radio" name="action" value="done" required> Mark as Done
+        </label>
+        <br>
+        <label>
+            <input type="radio" name="action" value="revert" required> Revert to In Progress
+        </label>
+        <br><br>
+        <label for="comment">Additional Comment (Optional):</label><br>
+        <textarea name="comment" id="comment" rows="4" cols="50"></textarea>
+        <br><br>
+        <button type="submit">Submit</button>
+    </form>
+    <a href="{{ url_for('index') }}">Cancel</a>
+</body>
+</html>

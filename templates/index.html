@@ -221,9 +221,7 @@
                 <th>Notes</th>
                 <th>Composition</th>
                 <th>Description</th>
-                {% if session.get('type') == 'admin' %}
-                    <th>Action</th>
-                {% endif %}
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -243,15 +241,60 @@
                     <td>{{ ", ".join(product.compositions) }}</td>
                     <td>{{ product.description }}</td>
                         <td>
-                            {% if session.get('type') in ['manager', 'admin'] %}
+                            {% if session['username'] in product.persons_in_charge or session['type'] in ['manager', 'admin'] %}
                                 <form action="{{ url_for('update_product', product_id=product.id) }}" method="GET" style="display:inline;">
                                     <button type="submit">Update</button>
                                 </form>
-                            {% endif %}
-                            {% if session.get('type') == 'admin' %}
-                                <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
-                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
-                                </form>
+                                <!-- Status Update Button -->
+                                {% if product.status in ['Initial', 'In progress'] %}
+                                    {% if product.status == "In progress" %}
+                                        <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="to_to_be_validated">
+                                            <button type="submit">Set to Be Validated</button>
+                                        </form>
+                                    {% endif %}
+                                    {% if product.status == "Initial" %}
+                                        <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="to_in_progress">
+                                            <button type="submit">Set to In Progress</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                {% if product.status == 'To be validated' %}
+                                    {% if session['type'] in ['manager', 'admin'] %}
+                                        <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="to_done">
+                                            <button type="submit">Mark as Done</button>
+                                        </form>
+                                        <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="to_in_progress">
+                                            <button type="submit">Revert to In Progress</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                {% if product.status == 'Archived' or  product.status == 'Done'%}
+                                    {% if session['type'] in ['manager', 'admin'] %}
+                                        <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="to_in_progress">
+                                            <button type="submit">Revert to In Progress</button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                                <!-- Archive Button -->
+                                {% if product.status != 'Archived'%}
+                                    <form action="{{ url_for('update_product_status', product_id=product.id) }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="archive">
+                                        <button type="submit">Archive</button>
+                                    </form>
+                                {% endif %}
+                                {% if session.get('type') == 'admin' %}
+                                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <span>N/A</span>
                             {% endif %}
                         </td>
                 </tr>

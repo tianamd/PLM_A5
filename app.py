@@ -409,9 +409,12 @@ def add_product():
 @app.route('/product/update/<int:product_id>', methods=['GET', 'POST'])
 def update_product(product_id):
     """Update a product's details."""
-    # Ensure proper authentication
-    if session.get('type') not in ['manager', 'admin']:
-        flash("You do not have permission to update products.")
+    # Ensure proper authorization
+    if (
+        session.get('type') not in ['manager', 'admin'] and
+        session.get('username') not in product.get('persons_in_charge', [])
+    ):
+        flash("You do not have permission to update this product.")
         return redirect(url_for('index'))
 
     # Find the product
@@ -423,20 +426,7 @@ def update_product(product_id):
     if request.method == 'POST':
         # Log the current state of the product before modification
          # Log the current state of the product before modification
-        previous_state = {
-            "id": product["id"],
-            "name": product["name"],
-            "description": product["description"],
-            "format": product["format"],
-            "cost": product["cost"],
-            "id_range": product["id_range"],
-            "ref": product["ref"],
-            "status": product["status"],
-            "start_date": product["start_date"],
-            "ids_composition": list(product.get("ids_composition", [])),
-            "ids_note": list(product.get("ids_note", [])),
-            "persons_in_charge": list(product.get("persons_in_charge", []))
-        }
+        previous_state = get_product_info(product)
 
         # Update product details
         product['name'] = request.form['name']
@@ -479,11 +469,7 @@ def update_product(product_id):
         product['cost'] = sum(c['price'] for c in compositions if c['id'] in composition_ids)
 
         # Update the reference
-        ref_parts = product['ref'].rsplit('_', 1)
-        if len(ref_parts) == 2 and ref_parts[1].isdigit():
-            product['ref'] = f"{ref_parts[0]}_{int(ref_parts[1]) + 1}"
-        else:
-            product['ref'] = f"{product['ref']}_"
+        update_product_ref(product)
 
         # Add to history
         if 'history' not in product:
@@ -513,26 +499,133 @@ def update_product(product_id):
         related_compositions=related_compositions
     )
 
-@app.route('/product/delete/<int:product_id>', methods=['POST'])
-def delete_product(product_id):
-    """Delete a product and its related entries in product_notes and product_compositions."""
-    auth_redirect = checkAuth()
-    if auth_redirect :
-        return auth_redirect
-    
-    global products, product_notes, product_compositions
+@app.route('/product/update_status/<int:product_id>', methods=['POST'])
+def update_product_status(product_id):
+    """Update the status of a product."""
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
 
-    # Remove the product from products
-    products = [p for p in products if p['id'] != product_id]
+    if session.get('type') not in ['manager', 'admin'] and session.get('username') not in product.get('persons_in_charge', []):
+        flash("You do not have permission to update this product's status.")
+        return redirect(url_for('index'))
 
-    # Remove related entries in product_notes and product_compositions
-    product_notes = [pn for pn in product_notes if pn['id_product'] != product_id]
-    product_compositions = [pc for pc in product_compositions if pc['id_product'] != product_id]
+    action = request.form.get('action')
+    previous_status = product['status']
+    new_status = None
 
-    # Save updated data back to JSON files
-    save_data()
+    # Define the status transitions
+    if action == "to_to_be_validated" and previous_status == "In progress":
+        new_status = "To be validated"
+    elif action == "to_done" and previous_status == "To be validated":
+        new_status = "Done"
+    elif action == "to_in_progress" and previous_status in ["Initial", "To be validated", "Done", "Archived"]:
+        new_status = "In progress"
+    elif action == "archive":
+        new_status = "Archived"
+
+    if new_status:
+        previous_state = get_product_info(product)
+        product['status'] = new_status
+
+        if 'history' not in product:
+            product['history'] = []
+        product['history'].append({
+            "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "modified_by": session['username'],
+            "comment": f"Status update: {previous_status} --> {new_status}",
+            "previous_state": previous_state
+        })
+        save_data()
+        flash(f"Product status updated to '{new_status}' successfully.")
+    else:
+        flash("Invalid status transition.")
 
     return redirect(url_for('index'))
+
+
+@app.route('/product/validate_status/<int:product_id>', methods=['GET', 'POST'])
+def validate_product_status(product_id):
+    """Validate or revert the product's status."""
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    # Ensure proper authorization
+    if session.get('type') not in ['manager', 'admin']:
+        flash("You do not have permission to validate this product.")
+        return redirect(url_for('index'))
+
+    previous_state = get_product_info(product)
+
+    if request.method == 'POST':
+        # Determine the new status
+        action = request.form['action']
+        previous_status = product['status']
+        if action == "done":
+            new_status = "Done"
+        elif action == "revert":
+            new_status = "In progress"
+        else:
+            flash("Invalid action.")
+            return redirect(url_for('index'))
+
+        # Update the status
+        product['status'] = new_status
+
+        # Add to history
+        if 'history' not in product:
+            product['history'] = []
+        additional_comment = request.form.get('comment', '').strip()
+        product['history'].append({
+            "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "modified_by": session['username'],
+            "comment": f"Status update: {previous_status} --> {new_status}" + (f". Additional comment: {additional_comment}" if additional_comment else ""),
+            "previous_state": previous_state
+        })
+
+        save_data()
+        flash(f"Product status updated to '{new_status}' successfully.")
+        return redirect(url_for('index'))
+
+    return render_template(
+        'validate_status.html',
+        product=product
+    )
+
+@app.route('/product/delete/<int:product_id>', methods=['POST'])
+def delete_product(product_id):
+    """Delete or archive a product based on its current status."""
+    # Find the product
+    product = next((p for p in products if p['id'] == product_id), None)
+    if not product:
+        flash("Product not found.")
+        return redirect(url_for('index'))
+
+    # Ensure only admins can delete products
+    if session.get('type') != 'admin':
+        flash("You do not have permission to delete this product.")
+        return redirect(url_for('index'))
+
+    # Check action
+    action = request.form.get('action', '')
+    if action == "delete":
+        if product['status'] != "Archived":
+            flash("Only archived products can be deleted.")
+            return redirect(url_for('index'))
+
+        # Remove product permanently
+        products.remove(product)
+        save_data()
+        flash("Product deleted permanently.")
+    else:
+        flash("Invalid action.")
+
+    return redirect(url_for('index'))
+
 
 def recalculate_product_cost(product_id):
     """Recalculate the cost of a product based on its components."""
@@ -625,6 +718,27 @@ def delete_user(username):
 
     return redirect(url_for('manage_users'))
 
+def get_product_info(product):
+    return {
+            "id": product["id"],
+            "name": product["name"],
+            "description": product["description"],
+            "format": product["format"],
+            "cost": product["cost"],
+            "id_range": product["id_range"],
+            "ref": product["ref"],
+            "status": product["status"],
+            "start_date": product["start_date"],
+            "ids_composition": list(product.get("ids_composition", [])),
+            "ids_note": list(product.get("ids_note", [])),
+            "persons_in_charge": list(product.get("persons_in_charge", []))
+        }
+def update_product_ref(product):
+    ref_parts = product['ref'].rsplit('_', 1)
+    if len(ref_parts) == 2 and ref_parts[1].isdigit():
+        product['ref'] = f"{ref_parts[0]}_{int(ref_parts[1]) + 1}"
+    else:
+        product['ref'] = f"{product['ref']}_"
 
 if __name__ == '__main__':
     app.run(debug=True)
