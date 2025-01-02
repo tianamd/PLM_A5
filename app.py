@@ -12,16 +12,12 @@ PRODUCTS_FILE = "data/products.json"
 NOTES_FILE = "data/notes.json"
 USERS_FILE = "data/users.json"
 COMPOSITIONS_FILE = "data/compositions.json"
-PRODUCT_NOTES_FILE = "data/product_notes.json"
-PRODUCT_COMPOSITIONS_FILE = "data/product_compositions.json"
 RANGES_FILE = "data/ranges.json"
 
 # In-memory data storage
 products = []
 notes = []
 compositions = []
-product_notes = []
-product_compositions = []
 ranges = []
 users = []
 
@@ -50,16 +46,12 @@ def save_data():
         json.dump(notes, f, indent=4)
     with open(COMPOSITIONS_FILE, 'w') as f:
         json.dump(compositions, f, indent=4)
-    with open(PRODUCT_NOTES_FILE, 'w') as f:
-        json.dump(product_notes, f, indent=4)
-    with open(PRODUCT_COMPOSITIONS_FILE, 'w') as f:
-        json.dump(product_compositions, f, indent=4)
     with open(RANGES_FILE, 'w') as f:
         json.dump(ranges, f, indent=4)
 
 def load_data():
     """Load data from JSON files."""
-    global products, notes, compositions, product_notes, product_compositions, ranges
+    global products, notes, compositions, ranges
     try:
         with open(PRODUCTS_FILE, 'r') as f:
             products = json.load(f)
@@ -77,18 +69,6 @@ def load_data():
             compositions = json.load(f)
     except FileNotFoundError:
         compositions = []
-
-    try:
-        with open(PRODUCT_NOTES_FILE, 'r') as f:
-            product_notes = json.load(f)
-    except FileNotFoundError:
-        product_notes = []
-
-    try:
-        with open(PRODUCT_COMPOSITIONS_FILE, 'r') as f:
-            product_compositions = json.load(f)
-    except FileNotFoundError:
-        product_compositions = []
 
     try:
         with open(RANGES_FILE, 'r') as f:
@@ -186,10 +166,10 @@ def index():
         range_name = next((r['name'] for r in ranges if r['id'] == product['id_range']), "Unknown")
         
         # Get notes for the product
-        related_notes = [n['name'] for n in notes if any(pn['id_note'] == n['id'] and pn['id_product'] == product['id'] for pn in product_notes)]
+        related_notes = [n['name'] for n in notes if n['id'] in product.get('ids_note', [])]
         
         # Get compositions for the product
-        related_compositions = [c['name'] for c in compositions if any(pc['id_composition'] == c['id'] and pc['id_product'] == product['id'] for pc in product_compositions)]
+        related_compositions = [c['name'] for c in compositions if c['id'] in product.get('ids_composition', [])]
         
         # Add processed data to the product
         processed_product = {
@@ -342,10 +322,10 @@ def product_detail(product_id):
         return "Product not found", 404
 
     # Retrieve related notes
-    related_notes = [n['name'] for n in notes if any(pn['id_note'] == n['id'] and pn['id_product'] == product_id for pn in product_notes)]
+    related_notes = [n['name'] for n in notes if n['id'] in product.get('ids_note', [])]
 
     # Retrieve related compositions
-    related_compositions = [c['name'] for c in compositions if any(pc['id_composition'] == c['id'] and pc['id_product'] == product_id for pc in product_compositions)]
+    related_compositions = [c['name'] for c in compositions if c['id'] in product.get('ids_composition', [])]
 
     return render_template('product_detail.html', product=product, notes=related_notes, compositions=related_compositions)
 
@@ -373,29 +353,30 @@ def add_product():
         # Handle notes
         selected_notes = request.form.getlist('notes')
         new_notes = request.form.getlist('new_notes')
+        ids_notes = []
         for note_name in new_notes:
             if note_name.strip():
                 new_note_id = len(notes) + 1
                 notes.append({'id': new_note_id, 'name': note_name})
-                product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': new_note_id})
-        for note in selected_notes:
-            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note)})
+                ids_notes.append(new_note_id)
+        for note_id in selected_notes:
+            ids_notes.append(int(note_id))
 
         # Handle compositions
         selected_compositions = request.form.getlist('compositions')
         new_compositions = request.form.getlist('new_compositions')
-        product_compositions_list = []
+        ids_composition = []
         for composition_name in new_compositions:
             if composition_name.strip():
                 new_composition_id = len(compositions) + 1
                 compositions.append({'id': new_composition_id, 'name': composition_name, 'price': 0.0})  # Default price
-                product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': new_composition_id})
-        for composition in selected_compositions:
-            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(composition)})
-            product_compositions_list.append(int(composition))
+                ids_composition.append(new_composition_id)
+        for composition_id in selected_compositions:
+            ids_composition.append(int(composition_id))
+
 
         # Calculate cost based on selected compositions
-        cost = sum(comp['price'] for comp in compositions if comp['id'] in product_compositions_list)
+        cost = sum(comp['price'] for comp in compositions if comp['id'] in ids_composition)
 
         # Get today's date in JJ/MM/AAAA format
         start_date = datetime.now().strftime("%d/%m/%Y")
@@ -411,6 +392,8 @@ def add_product():
             'format': format,
             'cost': cost,
             'id_range': range_id,
+            'ids_notes': ids_notes,
+            'ids_composition': ids_composition,
             'ref': ref, 
             'status':"Initial", 
             "start_date":start_date,
@@ -448,16 +431,32 @@ def update_product(product_id):
 
         # Update notes
         selected_notes = request.form.getlist('notes')
-        product_notes[:] = [pn for pn in product_notes if pn['id_product'] != product_id]
+        new_notes = request.form.getlist('new_notes')
+        note_ids = []
+        for note_name in new_notes:
+            if note_name.strip():
+                new_note_id = len(notes) + 1
+                notes.append({'id': new_note_id, 'name': note_name})
+                note_ids.append(new_note_id)
         for note_id in selected_notes:
-            product_notes.append({'id': len(product_notes) + 1, 'id_product': product_id, 'id_note': int(note_id)})
+            note_ids.append(int(note_id))
+
+        product['ids_note'] = note_ids
 
         # Update compositions
         selected_compositions = request.form.getlist('compositions')
-        product_compositions[:] = [pc for pc in product_compositions if pc['id_product'] != product_id]
+        new_compositions = request.form.getlist('new_compositions')
+        composition_ids = []
+        for composition_name in new_compositions:
+            if composition_name.strip():
+                new_composition_id = len(compositions) + 1
+                compositions.append({'id': new_composition_id, 'name': composition_name, 'price': 0.0})  # Default price
+                composition_ids.append(new_composition_id)
         for composition_id in selected_compositions:
-            product_compositions.append({'id': len(product_compositions) + 1, 'id_product': product_id, 'id_composition': int(composition_id)})
+            composition_ids.append(int(composition_id))
 
+        # Update product with new compositions
+        product['ids_composition'] = composition_ids
         # Recalculate cost
         composition_ids = [int(c['id_composition']) for c in product_compositions if c['id_product'] == product_id]
         product['cost'] = sum(c['price'] for c in compositions if c['id'] in composition_ids)
@@ -467,8 +466,8 @@ def update_product(product_id):
         return redirect(url_for('product_detail', product_id=product_id))
 
     # Fetch range names and related notes/compositions
-    related_notes = [n['id'] for n in notes if any(pn['id_note'] == n['id'] and pn['id_product'] == product_id for pn in product_notes)]
-    related_compositions = [c['id'] for c in compositions if any(pc['id_composition'] == c['id'] and pc['id_product'] == product_id for pc in product_compositions)]
+    related_notes = product.get('ids_note', [])
+    related_compositions = product.get('ids_composition', [])
 
     return render_template(
         'update_product.html',

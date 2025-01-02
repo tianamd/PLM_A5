@@ -33,7 +33,8 @@
         <label for="notes">Notes:</label><br>
         {% for note in notes %}
             <label>
-                <input type="checkbox" name="notes" value="{{ note.id }}" {% if note.id in related_notes %}checked{% endif %}>
+                <input type="checkbox" name="notes" value="{{ note.id }}" 
+                    {% if note.id in related_notes %}checked{% endif %}>
                 {{ note.name }}
             </label><br>
         {% endfor %}
@@ -41,7 +42,8 @@
         <label for="compositions">Compositions:</label><br>
         {% for composition in compositions %}
             <label>
-                <input type="checkbox" name="compositions" value="{{ composition.id }}" {% if composition.id in related_compositions %}checked{% endif %}>
+                <input type="checkbox" name="compositions" value="{{ composition.id }}" 
+                    {% if composition.id in related_compositions %}checked{% endif %}>
                 {{ composition.name }}
             </label><br>
         {% endfor %}
