@@ -162,6 +162,11 @@ def index():
     # Attach range names to products and fetch related notes/compositions
     filtered_products = []
     for product in products:
+
+        # Get product image
+        base_ref = product['ref'].split('_')[0]
+        product['image_path'] = f"data/documents/{base_ref}/Model.png"
+        
         # Get range name
         range_name = next((r['name'] for r in ranges if r['id'] == product['id_range']), "Unknown")
         
