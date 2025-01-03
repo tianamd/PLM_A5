@@ -5,7 +5,9 @@
 </head>
 <body>
     
-    <h1>{{ product.name }}</h1>
+    <h1>
+        <img src="{{ product.image_path }}" alt="" style="width: 50px; height: auto;">
+        {{ product.name }}</h1>
     {% if session.get('username') %}
         <div style="text-align: right;">
             Logged in as: {{ session['username'] }} | 

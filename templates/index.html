@@ -210,6 +210,7 @@
     <table>
         <thead>
             <tr>
+                <th>Image</th>
                 <th><a href="{{ url_for('index', sort='status', order='asc' if sort_column != 'status' or sort_order == 'desc' else 'desc') }}">Status</a></th>
                 <th><a href="{{ url_for('index', sort='persons_in_charge', order='asc' if sort_column != 'persons_in_charge' or sort_order == 'desc' else 'desc') }}"></a>Persons in Charge</a></th>
                 <th><a href="{{ url_for('index', sort='start_date', order='asc' if sort_column != 'start_date' or sort_order == 'desc' else 'desc') }}">Start Date</a></th>
@@ -227,6 +228,9 @@
         <tbody>
             {% for product in products %}
                 <tr>
+                    <td>
+                        <img src="{{ product.image_path }}" alt="" style="width: 50px; height: auto;">
+                    </td>
                     <td>{{ product.status }}</td>
                     <td>{{ ", ".join(product.persons_in_charge) }}</td>
                     <td>{{ product.start_date }}</td>

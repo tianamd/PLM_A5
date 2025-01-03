@@ -22,7 +22,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPMMO/Model.png"
     },
     {
         "id": 2,
@@ -47,7 +48,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPMCS/Model.png"
     },
     {
         "id": 3,
@@ -72,7 +74,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPMSL/Model.png"
     },
     {
         "id": 4,
@@ -96,7 +99,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPMMW/Model.png"
     },
     {
         "id": 5,
@@ -120,7 +124,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPMFH/Model.png"
     },
     {
         "id": 6,
@@ -145,7 +150,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPWVR/Model.png"
     },
     {
         "id": 7,
@@ -170,7 +176,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPWGA/Model.png"
     },
     {
         "id": 8,
@@ -195,7 +202,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPWIB/Model.png"
     },
     {
         "id": 9,
@@ -219,7 +227,8 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPWCC/Model.png"
     },
     {
         "id": 10,
@@ -244,6 +253,7 @@
         "start_date": "29/12/2024",
         "persons_in_charge": [
             "tiana"
-        ]
+        ],
+        "image_path": "static/documents/FPWSP/Model.png"
     }
 ]
