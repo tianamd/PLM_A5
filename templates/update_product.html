@@ -38,6 +38,7 @@
 
     <div class="container my-4">
         <h1 class="text-center mb-4">Update Product: {{ product.name }}</h1>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mb-4">⇠ Back to Home</a>
 
         <form method="POST">
             <div class="mb-3">
@@ -100,7 +101,7 @@
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-primary w-100">Update Product</button>
+                <button type="submit" class="btn btn-success w-100">Update Product</button>
             </div>
         </form>
     </div>

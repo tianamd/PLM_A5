@@ -3,6 +3,8 @@ import csv
 from flask import Flask, Response, stream_with_context, render_template, request, redirect, url_for, session, flash
 from passlib.hash import pbkdf2_sha256
 from datetime import datetime  # Add this at the top of the file
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Secret key for session management
@@ -13,6 +15,11 @@ NOTES_FILE = "data/notes.json"
 USERS_FILE = "data/users.json"
 COMPOSITIONS_FILE = "data/compositions.json"
 RANGES_FILE = "data/ranges.json"
+DOCUMENTS_FILE = "static/documents"
+ALLOWED_IMG_EXTENSIONS={'png'}
+ALLOWED_DOC_EXTENSIONS={'pdf', 'SLDPRT'}
+
+app.config['DOCUMENTS_FILE'] = DOCUMENTS_FILE
 
 # In-memory data storage
 products = []
@@ -162,6 +169,11 @@ def index():
     # Attach range names to products and fetch related notes/compositions
     filtered_products = []
     for product in products:
+
+        # Get product image
+        base_ref = product['ref'].split('_')[0]
+        product['image_path'] = DOCUMENTS_FILE+f"/{base_ref}/Model.png"
+
         # Get range name
         range_name = next((r['name'] for r in ranges if r['id'] == product['id_range']), "Unknown")
         
@@ -384,6 +396,28 @@ def add_product():
         # Handle persons in charge
         persons_in_charge = [p.strip() for p in request.form['persons_in_charge'].split(',') if p.strip()]
 
+        # Extract the base reference for folder naming
+        base_ref = ref.split('_')[0]
+        product_folder = os.path.join(app.config['DOCUMENTS_FILE'], base_ref)
+
+        # Ensure the folder exists
+        os.makedirs(product_folder, exist_ok=True)
+
+        # Handle image upload
+        image_file = request.files.get('image')
+        if image_file:
+            filename = "Model.png"  # Fixed name for product images
+            image_path = os.path.join(product_folder, filename)  # Full path to save the image
+            try:
+                image_file.save(image_path)  # Save the image to the product folder
+                flash(f"Image uploaded successfully for {name}.")
+            except Exception as e:
+                flash(f"Error uploading image: {str(e)}")
+                return redirect(request.url)  # Redirect back on error
+        else:
+            flash("No valid image file provided or invalid file type (only PNG is allowed).")
+
+
         # Add product to the database
         products.append({
             'id': product_id,
@@ -392,7 +426,7 @@ def add_product():
             'format': format,
             'cost': cost,
             'id_range': range_id,
-            'ids_notes': ids_notes,
+            'ids_note': ids_notes,
             'ids_composition': ids_composition,
             'ref': ref, 
             'status':"Initial", 
@@ -733,12 +767,20 @@ def get_product_info(product):
             "ids_note": list(product.get("ids_note", [])),
             "persons_in_charge": list(product.get("persons_in_charge", []))
         }
+
 def update_product_ref(product):
     ref_parts = product['ref'].rsplit('_', 1)
     if len(ref_parts) == 2 and ref_parts[1].isdigit():
         product['ref'] = f"{ref_parts[0]}_{int(ref_parts[1]) + 1}"
     else:
         product['ref'] = f"{product['ref']}_"
+
+def allowed_file(filename, file_type):
+    if (file_type == 'img'):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMG_EXTENSIONS
+    elif (file_type == 'doc'):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_DOC_EXTENSIONS
+    return False
 
 if __name__ == '__main__':
     app.run(debug=True)

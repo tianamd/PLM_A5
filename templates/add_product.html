@@ -31,10 +31,10 @@
         }
     </style>
 </head>
-<body class=" bg-darkmode">
+<body class="bg-darkmode">
 
     <div class="container my-4">
-        <h1 class="text-center mb-4 ">Add a New Product</h1>
+        <h1 class="text-center mb-4">Add a New Product</h1>
 
         {% if session.get('username') %}
         <div class="text-end mb-3">
@@ -45,7 +45,7 @@
 
         <a href="{{ url_for('index') }}" class="btn btn-secondary mb-4">⇠ Back to Home</a>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" name="name" class="form-control" required>
@@ -110,6 +110,11 @@
                 <label for="new_compositions" class="form-label">Add New Compositions</label>
                 <textarea id="new_compositions" name="new_compositions" class="form-control" placeholder="Separate multiple compositions with commas"></textarea>
                 <small class="text-muted">Separate multiple compositions with commas.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Product Image (PNG only)</label>
+                <input type="file" name="image" class="form-control" accept="image/png">
             </div>
 
             <div class="text-center">
