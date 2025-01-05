@@ -4,29 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .bg-darkmode {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+        }
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #005bb5;
+        }
+        a {
+            color: #66b2ff;
+        }
+        a:hover {
+            color: #99ccff;
+        }
+    </style>
 </head>
-<body>
-    <h1>Welcome to the PLM System</h1>
+<body class="d-flex align-items-center justify-content-center vh-100 bg-darkmode" >
+    <div class="container  p-5 rounded shadow-lg">
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-center mb-4">
+        <h1 class="text-center mb-4">Welcome to the PLM System</h1>
+        <img src="{{ url_for('static', filename='img/pas.png') }}" alt="PLM System Logo" class="img-fluid" style="max-width: 200px;">
+        </div>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-warning" role="alert">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-    <h2>Login</h2>
-    <form method="POST">
-        <label for="username">Username:</label>
-        <input type="text" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required>
-        <br>
-        <button type="submit" name="login">Login</button>
-    </form>
+
+        <!-- Login Form -->
+        <h2 class="text-center mb-4">Register</h2>
+        <form method="POST" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control bg-dark text-light" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control bg-dark text-light" id="password" required>
+            </div>
+            <div class="d-grid">
+                    <button type="submit" name="login" class="btn btn-primary">
+                        <i class="fa fa-sign-in" aria-hidden="true"> </i>
+                        Login
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

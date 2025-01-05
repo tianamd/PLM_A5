@@ -4,45 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Product</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .bg-darkmode {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .form-control, .form-select {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+        .form-control::placeholder {
+            color: #bbbbbb;
+        }
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #005bb5;
+        }
+    </style>
 </head>
-<body>
-    <h1>Update Product: {{ product.name }}</h1>
-    <form method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" value="{{ product.name }}" required><br><br>
+<body class=" bg-darkmode">
 
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required>{{ product.description }}</textarea><br><br>
+    <div class="container my-4">
+        <h1 class="text-center mb-4">Update Product: {{ product.name }}</h1>
 
-        <label for="range">Range:</label>
-        <select id="range" name="range">
-            {% for range in ranges %}
-                <option value="{{ range.id }}" {% if range.id == product.id_range %}selected{% endif %}>
-                    {{ range.name }}
-                </option>
-            {% endfor %}
-        </select><br><br>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ product.name }}" required>
+            </div>
 
-        <label for="format">Format:</label>
-        <input type="text" id="format" name="format" value="{{ product.format }}" required><br><br>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" class="form-control" rows="3" required>{{ product.description }}</textarea>
+            </div>
 
-        <label for="notes">Notes:</label><br>
-        {% for note in notes %}
-            <label>
-                <input type="checkbox" name="notes" value="{{ note.id }}" {% if note.id in related_notes %}checked{% endif %}>
-                {{ note.name }}
-            </label><br>
-        {% endfor %}
+            <div class="mb-3">
+                <label for="range" class="form-label">Range</label>
+                <select id="range" name="range" class="form-select">
+                    {% for range in ranges %}
+                        <option value="{{ range.id }}" {% if range.id == product.id_range %}selected{% endif %}>
+                            {{ range.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <label for="compositions">Compositions:</label><br>
-        {% for composition in compositions %}
-            <label>
-                <input type="checkbox" name="compositions" value="{{ composition.id }}" {% if composition.id in related_compositions %}checked{% endif %}>
-                {{ composition.name }}
-            </label><br>
-        {% endfor %}
+            <div class="mb-3">
+                <label for="format" class="form-label">Format</label>
+                <input type="text" id="format" name="format" class="form-control" value="{{ product.format }}" required>
+            </div>
 
-        <button type="submit">Update Product</button>
-    </form>
+            <div class="mb-3">
+                <label for="persons_in_charge" class="form-label">Add Persons in Charge</label>
+                <textarea id="persons_in_charge" name="persons_in_charge" class="form-control" placeholder="Separate multiple names with commas">{{ ", ".join(product.persons_in_charge) }}</textarea>
+                <small class="text-muted">Separate multiple names with commas.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <div class="form-check">
+                    {% for note in notes %}
+                        <input type="checkbox" name="notes" class="form-check-input" value="{{ note.id }}" 
+                            {% if note.id in related_notes %}checked{% endif %}>
+                        <label class="form-check-label">{{ note.name }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="compositions" class="form-label">Compositions</label>
+                <div class="form-check">
+                    {% for composition in compositions %}
+                        <input type="checkbox" name="compositions" class="form-check-input" value="{{ composition.id }}" 
+                            {% if composition.id in related_compositions %}checked{% endif %}>
+                        <label class="form-check-label">{{ composition.name }}</label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea id="comment" name="comment" class="form-control" rows="3" placeholder="Enter a comment about the changes"></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary w-100">Update Product</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
