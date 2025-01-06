@@ -207,14 +207,16 @@
     },
     {
         "id": 9,
-        "ref": "FPWCC_4",
+        "ref": "FPWCC_1",
         "name": "Citrus Charm",
         "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
         "format": "100ml",
         "cost": 53.0,
         "id_range": 2,
         "ids_note": [
-            6
+            6,
+            21,
+            22
         ],
         "ids_composition": [
             1,
@@ -226,96 +228,7 @@
         "persons_in_charge": [
             "tiana"
         ],
-        "image_path": "static/documents/FPWCC/Model.png",
-        "history": [
-            {
-                "date": "05/01/2025 05:14:02",
-                "modified_by": "admin",
-                "comment": "",
-                "previous_state": {
-                    "id": 9,
-                    "name": "Citrus Charm",
-                    "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
-                    "format": "100ml",
-                    "cost": 53.0,
-                    "id_range": 2,
-                    "ref": "FPWCC_1",
-                    "status": "Initial",
-                    "start_date": "29/12/2024",
-                    "ids_composition": [
-                        1,
-                        23,
-                        24
-                    ],
-                    "ids_note": [
-                        6,
-                        21,
-                        22
-                    ],
-                    "persons_in_charge": [
-                        "tiana"
-                    ]
-                }
-            },
-            {
-                "date": "05/01/2025 05:15:45",
-                "modified_by": "admin",
-                "comment": "",
-                "previous_state": {
-                    "id": 9,
-                    "name": "Citrus Charm",
-                    "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
-                    "format": "100ml",
-                    "cost": 53.0,
-                    "id_range": 2,
-                    "ref": "FPWCC_2",
-                    "status": "Initial",
-                    "start_date": "29/12/2024",
-                    "ids_composition": [
-                        1,
-                        23,
-                        24
-                    ],
-                    "ids_note": [
-                        6,
-                        21,
-                        22
-                    ],
-                    "persons_in_charge": [
-                        "tiana"
-                    ]
-                }
-            },
-            {
-                "date": "05/01/2025 05:16:25",
-                "modified_by": "admin",
-                "comment": "",
-                "previous_state": {
-                    "id": 9,
-                    "name": "Citrus Charm",
-                    "description": "A vibrant and uplifting fragrance featuring mandarin, oid_range blossom, and a hint of musk.",
-                    "format": "100ml",
-                    "cost": 53.0,
-                    "id_range": 2,
-                    "ref": "FPWCC_3",
-                    "status": "Initial",
-                    "start_date": "29/12/2024",
-                    "ids_composition": [
-                        1,
-                        23,
-                        24
-                    ],
-                    "ids_note": [
-                        6,
-                        21,
-                        22
-                    ],
-                    "persons_in_charge": [
-                        "tiana"
-                    ]
-                }
-            }
-        ]
+        "image_path": "static/documents/FPWCC/Model.png"
     },
     {
         "id": 10,
