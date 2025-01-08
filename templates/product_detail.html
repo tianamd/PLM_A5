@@ -61,6 +61,16 @@
         <p><strong>Format:</strong> {{ product.format }}</p>
         <p><strong>Cost:</strong> {{ product.cost }} €</p>
 
+        <h2 class="mt-4">Documents</h2>
+        <ul class="list-group">
+            <li class="list-group-item bg-dark text-light">
+                <a href="{{ url_for('static', filename=product.SDS_path.split('static/')[1]) }}" download>SDS (Safety Data Sheet)</a>
+            </li>
+            <li class="list-group-item bg-dark text-light">
+                <a href="{{ url_for('static', filename=product.botol_path.split('static/')[1]) }}" download>Botol Model</a>
+            </li>
+        </ul>
+
         <h2 class="mt-4">Persons in Charge</h2>
         <ul class="list-group">
             {% for person in product.persons_in_charge %}

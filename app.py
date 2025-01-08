@@ -224,100 +224,55 @@ def index():
     )
 
 @app.route('/export_csv')
-def export_csv():    
-    """Export selected product details as a CSV with multi-relational Notes and Composition."""
-    auth_redirect = checkAuth()
-    if auth_redirect :
-        return auth_redirects
+def export_csv():
+    """Export products.json into a CSV file with specific transformations."""
+    # Define the output CSV columns
+    csv_columns = ['ID', 'Reference', 'Name', 'Description', 'Format', 'Cost', 'Range', 'Notes', 'Compositions', 'Persons in Charge', 'Status', 'Start Date']
 
-    # Get filter parameters
-    min_price = request.args.get('min_price', None, type=float)
-    max_price = request.args.get('max_price', None, type=float)
-    selected_ranges = request.args.getlist('ranges', type=int)
-    selected_names = request.args.getlist('name')
-    selected_notes = request.args.getlist('notes')
-    selected_compositions = request.args.getlist('compositions')
-    sort_column = request.args.get('sort', 'name')
-    sort_order = request.args.get('order', 'asc')
-
-    # Log received filters
-    print(f"Min Price: {min_price}, Max Price: {max_price}")
-    print(f"Selected Ranges: {selected_ranges}")
-    print(f"Selected Names: {selected_names}")
-    print(f"Selected Notes: {selected_notes}")
-    print(f"Selected Compositions: {selected_compositions}")
-    print(f"Sort Column: {sort_column}, Sort Order: {sort_order}")
-
-    # Build relational mappings for Notes and Compositions
-    product_notes_mapping = {}
-    for pn in product_notes:
-        if pn['id_product'] not in product_notes_mapping:
-            product_notes_mapping[pn['id_product']] = []
-        note = next((n['name'] for n in notes if n['id'] == pn['id_note']), None)
-        if note:
-            product_notes_mapping[pn['id_product']].append(note)
-
-    product_compositions_mapping = {}
-    for pc in product_compositions:
-        if pc['id_product'] not in product_compositions_mapping:
-            product_compositions_mapping[pc['id_product']] = []
-        composition = next((c['name'] for c in compositions if c['id'] == pc['id_composition']), None)
-        if composition:
-            product_compositions_mapping[pc['id_product']].append(composition)
-
-    # Filter products
-    filtered_products = []
+    # Prepare CSV rows
+    csv_rows = []
     for product in products:
-        # Apply filters
-        if selected_ranges and product['id_range'] not in selected_ranges:
-            continue
-        if selected_names and product['name'] not in selected_names:
-            continue
-        if selected_notes and not any(note in product_notes_mapping.get(product['id'], []) for note in selected_notes):
-            continue
-        if selected_compositions and not any(comp in product_compositions_mapping.get(product['id'], []) for comp in selected_compositions):
-            continue
-        if min_price is not None and product[price_type] < min_price:
-            continue
-        if max_price is not None and product[price_type] > max_price:
-            continue
+        # Get range name
+        range_name = next((r['name'] for r in ranges if r['id'] == product['id_range']), "Unknown")
 
-        filtered_products.append(product)
+        # Get notes names
+        notes_names = ', '.join([n['name'] for n in notes if n['id'] in product.get('ids_note', [])])
 
-    # Debug filtered products
-    print(f"Filtered Products: {[p['name'] for p in filtered_products]}")
+        # Get compositions names
+        compositions_names = ', '.join([c['name'] for c in compositions if c['id'] in product.get('ids_composition', [])])
 
-    # Sort products
-    reverse = sort_order == 'desc'
-    filtered_products.sort(key=lambda x: x.get(sort_column, '').lower() if isinstance(x.get(sort_column), str) else x.get(sort_column), reverse=reverse)
+        # Get persons in charge
+        persons_in_charge = ', '.join(product.get('persons_in_charge', []))
 
-    # Debug sorted products
-    print(f"Sorted Products: {[p['name'] for p in filtered_products]}")
+        # Add the row
+        csv_rows.append({
+            'ID': product['id'],
+            'Reference': product['ref'],
+            'Name': product['name'],
+            'Description': product['description'],
+            'Format': product['format'],
+            'Cost': product['cost'],
+            'Range': range_name,
+            'Notes': notes_names,
+            'Compositions': compositions_names,
+            'Persons in Charge': persons_in_charge,
+            'Status': product['status'],
+            'Start Date': product['start_date']
+        })
 
-    # Create CSV response
+    # Generate the CSV response
     def generate_csv():
-        # Headers
-        yield 'Range;Product Name;Format;Retail Price;Cost;Description;Notes;Composition\n'
-    
-        # Write filtered product details
-        for product in filtered_products:
-            notes = ', '.join(product_notes_mapping.get(product['id'], []))  # Internal separator: ","
-            compositions = ', '.join(product_compositions_mapping.get(product['id'], []))  # Internal separator: ","
-            row = [
-                product.get('range_name', ''),
-                product.get('name', ''),
-                product.get('format', ''),
-                str(product.get('cost', '')),
-                product.get('description', '').replace('\n', ' '),  # Avoid newlines in description
-                notes,
-                compositions
-            ]
-            yield ';'.join(row) + '\n'  # Column separator: ";"
+        # Write the headers
+        yield ';'.join(csv_columns) + '\n'
+        # Write the data rows
+        for row in csv_rows:
+            yield ';'.join([str(row[col]) for col in csv_columns]) + '\n'
 
+    # Return the response
     return Response(
         stream_with_context(generate_csv()),
         mimetype='text/csv',
-        headers={"Content-Disposition": "attachment; filename=product_details.csv"}
+        headers={"Content-Disposition": "attachment; filename=products.csv"}
     )
 
 
@@ -417,6 +372,9 @@ def add_product():
         else:
             flash("No valid image file provided or invalid file type (only PNG is allowed).")
 
+        image_path = "static/documents/"+base_ref+"/Model.png"
+        botol_path = "static/documents/"+base_ref+"/botol.SLDPRT"
+        SDS_path = "static/documents/"+base_ref+"/SDS.pdf"
 
         # Add product to the database
         products.append({
@@ -431,7 +389,10 @@ def add_product():
             'ref': ref, 
             'status':"Initial", 
             "start_date":start_date,
-            'persons_in_charge': persons_in_charge
+            'persons_in_charge': persons_in_charge,
+            "image_path": image_path,
+            "botol_path": botol_path,
+            "SDS_path": SDS_path
         })
 
         save_data()  # Save the updated data

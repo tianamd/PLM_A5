@@ -148,6 +148,10 @@
         </form>
     </div>
 
+    <a href="{{ url_for('export_csv', price_type='cost', min_price=min_price, max_price=max_price, ranges=selected_ranges, name=selected_names, notes=selected_notes, compositions=selected_compositions, sort=sort_column, order=sort_order) }}" class="btn btn-primary">
+        Export CSV
+    </a>
+    
     <!-- Product Table -->
     <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover">
